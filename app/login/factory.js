@@ -9,16 +9,22 @@ module.exports = function(Auth){
         if (error.code === "TRANSPORT_UNAVAILABLE") {
           // fall-back to browser redirects, and pick up the session
           // automatically when we come back to the origin page
-          Auth.$authWithOAuthRedirect(authMethod, function(error) { / */ });
+          Auth.$authWithOAuthRedirect(provider, function(error) { / */ });
         }
       } else if (authData) {
         console.log("authData: ", authData);
       }
+    }, {
+      scope: 'email,user_likes,public_profile'
     });
   }
 
   function logout(){
     Auth.$unauth();
+  }
+
+  function getUser(){
+    return Auth.$getAuth();
   }
 
   Auth.$onAuth(function(authData){
@@ -31,6 +37,7 @@ module.exports = function(Auth){
 
   return {
     login: login,
-    logout: logout
+    logout: logout,
+    getUser: getUser
   }
 }

@@ -7,56 +7,40 @@ require('angular-route');
 require('ng-annotate');
 require('firebase');
 require('angularfire/dist/angularfire');
+require('angular-easyfb/src/angular-easyfb');
+require('sugar/release/sugar-full.development');
 
-angular.module("app", [
-  "ng",
-  "ngAria",
-  "firebase",
-  "ngRoute",
+angular.module('app', [
+  'ng',
+  'ngAria',
+  'firebase',
+  'ngRoute',
+  'ezfb',
   require('./config').name,
+  require('./layout').name,
   require('./login').name,
+  require('./facebook').name,
   require('./home').name,
-  require('./calendar').name
+  require('./calendar').name,
+  require('./schedule').name
 ])
-  .controller('LayoutController', function($scope, $mdSidenav, loginFactory, $location){
-    $scope.links = [
-      {
-        title: 'Calendar',
-        path: '/calendar'
-      },
-      {
-        title: 'Home',
-        path: '/home'
-      }
-    ]
-
-    $scope.toggleSidenav = function(menuId) {
-      $mdSidenav(menuId).toggle();
-    };
-
-    $scope.navigateTo = function(path){
-      $location.path(path);
-      $mdSidenav('left').toggle();
-    }
-
-    $scope.login = function(authMethod){
-      loginFactory.login();
-    }
-
-    $scope.logout = function(){
-      loginFactory.logout();
-    }
-  })
   .config(function ($routeProvider, $locationProvider) {
-    $locationProvider
-      .hashPrefix('');
-
     $routeProvider.otherwise({
       redirectTo: '/home'
     });
   })
-  .run(function($rootScope, Auth) {
+  .run(function($rootScope, Auth, ezfb) {
+    window.rootScope = $rootScope;
+
+    ezfb.init({
+      appId: '1274974405853101',
+      // status: true,
+      // cookie: true,
+      xfbml: true,
+      version: 'v2.5'
+    }); 
+
     Auth.$onAuth(function(user) {
-      $rootScope.loggedIn = !!user;
+      $rootScope.user = user;
     });
   });

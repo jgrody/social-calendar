@@ -21,6 +21,7 @@
     "angular": "1.5.0",
     "angular-animate": "1.5.0",
     "angular-aria": "1.5.0",
+    "angular-easyfb": "^1.4.1",
     "angular-material": "1.0.6",
     "angular-material-calendar": "0.2.14",
     "angular-messages": "1.5.0",
@@ -28,6 +29,7 @@
     "angular-sanitize": "1.5.0",
     "angularfire": "1.1.4",
     "firebase": "2.4.1",
-    "ng-annotate": "1.2.1"
+    "ng-annotate": "1.2.1",
+    "sugar": "^1.4.1"
   }
 }

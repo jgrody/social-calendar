@@ -1,7 +1,12 @@
 module.exports = angular.module('app.home', [
 ])
-  .controller('HomeController', function($scope, user){
-    // console.log("user: ", user);
+  .controller('HomeController', function($scope, user, facebookService){
+    window.user = user;
+    facebookService.getMyLastName(user)
+      .then(function(data){
+        console.log("data: ", data);
+
+      })
   })
   .config(function($routeProvider){
     $routeProvider.when('/home', {
