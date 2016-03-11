@@ -13,19 +13,30 @@ angular.module("app", [
   "ng",
   "ngAria",
   "firebase",
-  "ngMaterial",
   "ngRoute",
   require('./config').name,
   require('./login').name,
-  require('./home').name
+  require('./home').name,
+  require('./calendar').name
 ])
-  .controller('LayoutController', ["$scope", "$mdSidenav", "loginFactory", function($scope, $mdSidenav, loginFactory){
+  .controller('LayoutController', ["$scope", "$mdSidenav", "loginFactory", "$location", function($scope, $mdSidenav, loginFactory, $location){
+    $scope.links = [
+      {
+        title: 'Calendar',
+        path: '/calendar'
+      },
+      {
+        title: 'Home',
+        path: '/home'
+      }
+    ]
+
     $scope.toggleSidenav = function(menuId) {
       $mdSidenav(menuId).toggle();
     };
 
-    $scope.navigateTo = function(sref){
-      $state.go(sref);
+    $scope.navigateTo = function(path){
+      $location.path(path);
       $mdSidenav('left').toggle();
     }
 
@@ -37,7 +48,10 @@ angular.module("app", [
       loginFactory.logout();
     }
   }])
-  .config(["$routeProvider", function ($routeProvider) {
+  .config(["$routeProvider", "$locationProvider", function ($routeProvider, $locationProvider) {
+    $locationProvider
+      .hashPrefix('');
+
     $routeProvider.otherwise({
       redirectTo: '/home'
     });
@@ -48,7 +62,7 @@ angular.module("app", [
     });
   }]);
 
-},{"./config":4,"./home":5,"./login":7,"angular":19,"angular-animate":10,"angular-aria":12,"angular-material/angular-material":13,"angular-route":15,"angular-sanitize":17,"angularfire/dist/angularfire":20,"firebase":26,"ng-annotate":31}],2:[function(require,module,exports){
+},{"./calendar":4,"./config":5,"./home":6,"./login":8,"angular":21,"angular-animate":11,"angular-aria":13,"angular-material/angular-material":15,"angular-route":17,"angular-sanitize":19,"angularfire/dist/angularfire":22,"firebase":28,"ng-annotate":33}],2:[function(require,module,exports){
 module.exports = ["$firebaseAuth", "FBURL", function($firebaseAuth, FBURL){
   "ngInject";
 
@@ -60,7 +74,29 @@ module.exports = angular.module('app.auth', [
   require('../config').name
 ])
   .factory('Auth', require('./factory'));
-},{"../config":4,"./factory":2}],4:[function(require,module,exports){
+},{"../config":5,"./factory":2}],4:[function(require,module,exports){
+require('angular-material-calendar/dist/angular-material-calendar.min');
+
+module.exports = angular.module('app.calendar', [
+  "ngMaterial",
+  "materialCalendar"
+])
+  .controller('CalendarController', ["$scope", "user", function($scope, user){
+    // console.log("user: ", user);
+  }])
+  .config(["$routeProvider", function($routeProvider){
+    $routeProvider.when('/calendar', {
+      templateUrl: 'calendar/template.html',
+      controller: 'CalendarController',
+      resolve: {
+        user: ['Auth', function (Auth) {
+          return Auth.$waitForAuth();
+        }]
+      }
+    });
+  }])
+
+},{"angular-material-calendar/dist/angular-material-calendar.min":14}],5:[function(require,module,exports){
 'use strict';
 
 // Declare app level module which depends on filters, and services
@@ -83,7 +119,7 @@ module.exports = angular.module('app.config', [])
     // }
   }]);
 
-},{}],5:[function(require,module,exports){
+},{}],6:[function(require,module,exports){
 module.exports = angular.module('app.home', [
 ])
   .controller('HomeController', ["$scope", "user", function($scope, user){
@@ -101,7 +137,7 @@ module.exports = angular.module('app.home', [
     });
   }])
 
-},{}],6:[function(require,module,exports){
+},{}],7:[function(require,module,exports){
 module.exports = ["Auth", function(Auth){
   "ngInject";
 
@@ -138,12 +174,12 @@ module.exports = ["Auth", function(Auth){
     logout: logout
   }
 }]
-},{}],7:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
 module.exports = angular.module('app.login', [
   require('../auth').name
 ])
   .factory('loginFactory', require('./factory'));
-},{"../auth":3,"./factory":6}],8:[function(require,module,exports){
+},{"../auth":3,"./factory":7}],9:[function(require,module,exports){
 // alter.js
 // MIT licensed, see LICENSE file
 // Copyright (c) 2013 Olov Lassus <olov.lassus@gmail.com>
@@ -190,7 +226,7 @@ if (typeof module !== "undefined" && typeof module.exports !== "undefined") {
     module.exports = alter;
 }
 
-},{"assert":21,"stable":56}],9:[function(require,module,exports){
+},{"assert":23,"stable":58}],10:[function(require,module,exports){
 /**
  * @license AngularJS v1.5.0
  * (c) 2010-2016 Google, Inc. http://angularjs.org
@@ -4313,11 +4349,11 @@ angular.module('ngAnimate', [])
 
 })(window, window.angular);
 
-},{}],10:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 require('./angular-animate');
 module.exports = 'ngAnimate';
 
-},{"./angular-animate":9}],11:[function(require,module,exports){
+},{"./angular-animate":10}],12:[function(require,module,exports){
 /**
  * @license AngularJS v1.5.0
  * (c) 2010-2016 Google, Inc. http://angularjs.org
@@ -4717,11 +4753,13 @@ ngAriaModule.directive('ngShow', ['$aria', function($aria) {
 
 })(window, window.angular);
 
-},{}],12:[function(require,module,exports){
+},{}],13:[function(require,module,exports){
 require('./angular-aria');
 module.exports = 'ngAria';
 
-},{"./angular-aria":11}],13:[function(require,module,exports){
+},{"./angular-aria":12}],14:[function(require,module,exports){
+angular.module("materialCalendar",["ngMaterial","ngSanitize"]),angular.module("materialCalendar").constant("materialCalendar.config",{version:"0.2.13",debug:document.domain.indexOf("localhost")>-1}),angular.module("materialCalendar").config(["materialCalendar.config","$logProvider","$compileProvider",function(t,a,e){t.debug&&(a.debugEnabled(!1),e.debugInfoEnabled(!1))}]),angular.module("materialCalendar").service("materialCalendar.Calendar",[function(){function t(t,a,e){var n=new Date;this.setWeekStartsOn=function(t){var a=parseInt(t||0,10);return this.weekStartsOn=!isNaN(a)&&a>=0&&6>=a?a:0,this.weekStartsOn},this.options=angular.isObject(e)?e:{},this.year=n.getFullYear(),this.month=n.getMonth(),this.weeks=[],this.weekStartsOn=this.setWeekStartsOn(this.options.weekStartsOn),this.next=function(){return this.start.getMonth()<11?void this.init(this.start.getFullYear(),this.start.getMonth()+1):void this.init(this.start.getFullYear()+1,0)},this.prev=function(){return this.month?void this.init(this.start.getFullYear(),this.start.getMonth()-1):void this.init(this.start.getFullYear()-1,11)},this.init=function(t,a){var e=new Date;this.year=angular.isDefined(t)?t:e.getFullYear(),this.month=angular.isDefined(a)?a:e.getMonth();var n=[31,28,31,30,31,30,31,31,30,31,30,31],o=n[this.month];1===this.month&&(this.year%4===0&&this.year%100!==0||this.year%400===0)&&(o=29),this.start=new Date(this.year,this.month,1);for(var r=angular.copy(this.start);r.getDay()!==this.weekStartsOn;)r.setDate(r.getDate()-1),o++;for(;o%7!==0;)o++;this.weeks=[];for(var i=0;o>i;++i)i%7===0&&this.weeks.push([]),this.weeks[this.weeks.length-1].push(angular.copy(r)),r.setDate(r.getDate()+1)},this.init(t,a)}return t}]),angular.module("materialCalendar").service("MaterialCalendarData",[function(){function t(){this.data={},this.getDayKey=function(t){return[t.getFullYear(),t.getMonth()+1,t.getDate()].join("-")},this.setDayContent=function(t,a){this.data[this.getDayKey(t)]=a||this.data[this.getDayKey(t)]||""}}return new t}]),angular.module("materialCalendar").directive("calendarMd",["$compile","$parse","$http","$q","materialCalendar.Calendar","MaterialCalendarData",function(t,a,e,n,o,r){var i="<md-content layout='column' layout-fill md-swipe-left='next()' md-swipe-right='prev()'><md-toolbar><div class='md-toolbar-tools' layout='row'><md-button class='md-icon-button' ng-click='prev()' aria-label='Previous month'><md-tooltip ng-if='::tooltips()'>Previous month</md-tooltip>&laquo;</md-button><div flex></div><h2 class='calendar-md-title'><span>{{ calendar.start | date:titleFormat:timezone }}</span></h2><div flex></div><md-button class='md-icon-button' ng-click='next()' aria-label='Next month'><md-tooltip ng-if='::tooltips()'>Next month</md-tooltip>&raquo;</md-button></div></md-toolbar><!-- agenda view --><md-content ng-if='weekLayout === columnWeekLayout' class='agenda'><div ng-repeat='week in calendar.weeks track by $index'><div ng-if='sameMonth(day)' ng-class='{&quot;disabled&quot; : isDisabled(day), active: active === day }' ng-click='handleDayClick(day)' ng-repeat='day in week' layout><md-tooltip ng-if='::tooltips()'>{{ day | date:dayTooltipFormat:timezone }}</md-tooltip><div>{{ day | date:dayFormat:timezone }}</div><div flex ng-bind-html='dataService.data[dayKey(day)]'></div></div></div></md-content><!-- calendar view --><md-content ng-if='weekLayout !== columnWeekLayout' flex layout='column' class='calendar'><div layout='row' class='subheader'><div layout-padding class='subheader-day' flex ng-repeat='day in calendar.weeks[0]'><md-tooltip ng-if='::tooltips()'>{{ day | date:dayLabelTooltipFormat }}</md-tooltip>{{ day | date:dayLabelFormat }}</div></div><div ng-if='week.length' ng-repeat='week in calendar.weeks track by $index' flex layout='row'><div tabindex='{{ sameMonth(day) ? (day | date:dayFormat:timezone) : 0 }}' ng-repeat='day in week track by $index' ng-click='handleDayClick(day)' flex layout layout-padding ng-class='{&quot;disabled&quot; : isDisabled(day), &quot;active&quot;: isActive(day), &quot;md-whiteframe-12dp&quot;: hover || focus }' ng-focus='focus = true;' ng-blur='focus = false;' ng-mouseleave='hover = false' ng-mouseenter='hover = true'><md-tooltip ng-if='::tooltips()'>{{ day | date:dayTooltipFormat }}</md-tooltip><div>{{ day | date:dayFormat }}</div><div flex ng-bind-html='dataService.data[dayKey(day)]'></div></div></div></md-content></md-content>",d=function(){var t="calendarMdCss";if(!document.getElementById(t)){var a=document.getElementsByTagName("head")[0],e=document.createElement("style");e.type="text/css",e.id=t,e.innerHTML="calendar-md md-content>md-content.agenda>*>* :not(:first-child),calendar-md md-content>md-content.calendar>:not(:first-child)>* :last-child{overflow:hidden;text-overflow:ellipsis}calendar-md{display:block;max-height:100%}calendar-md .md-toolbar-tools h2{overflow-x:hidden;text-overflow:ellipsis;white-space:nowrap}calendar-md md-content>md-content{border:1px solid rgba(0,0,0,.12)}calendar-md md-content>md-content.agenda>*>*{border-bottom:1px solid rgba(0,0,0,.12)}calendar-md md-content>md-content.agenda>*>.disabled{color:rgba(0,0,0,.3);pointer-events:none;cursor:auto}calendar-md md-content>md-content.agenda>*>* :first-child{padding:12px;width:200px;text-align:right;color:rgba(0,0,0,.75);font-weight:100;overflow-x:hidden;text-overflow:ellipsis;white-space:nowrap}calendar-md md-content>md-content>*>*{min-width:48px}calendar-md md-content>md-content.calendar>:first-child{background:rgba(0,0,0,.02);border-bottom:1px solid rgba(0,0,0,.12);margin-right:0;min-height:36px}calendar-md md-content>md-content.calendar>:not(:first-child)>*{border-bottom:1px solid rgba(0,0,0,.12);border-right:1px solid rgba(0,0,0,.12);cursor:pointer}calendar-md md-content>md-content.calendar>:not(:first-child)>:hover{background:rgba(0,0,0,.04)}calendar-md md-content>md-content.calendar>:not(:first-child)>.disabled{color:rgba(0,0,0,.3);pointer-events:none;cursor:auto}calendar-md md-content>md-content.calendar>:not(:first-child)>.active{box-shadow:0 1px 3px 0 rgba(0,0,0,.2),0 1px 1px 0 rgba(0,0,0,.14),0 2px 1px -1px rgba(0,0,0,.12);background:rgba(0,0,0,.02)}calendar-md md-content>md-content.calendar>:not(:first-child)>* :first-child{padding:0}",a.insertBefore(e,a.firstChild)}};return{restrict:"E",scope:{ngModel:"=?",template:"&",templateUrl:"=?",onDayClick:"=?",onPrevMonth:"=?",onNextMonth:"=?",calendarDirection:"=?",dayContent:"&?",timezone:"=?",titleFormat:"=?",dayFormat:"=?",dayLabelFormat:"=?",dayLabelTooltipFormat:"=?",dayTooltipFormat:"=?",weekStartsOn:"=?",tooltips:"&?",clearDataCacheOnLoad:"=?",disableFutureSelection:"=?"},link:function(l,c,s){d();var u=new Date,m=parseInt(s.startMonth||u.getMonth()),h=parseInt(s.startYear||u.getFullYear());l.columnWeekLayout="column",l.weekLayout="row",l.timezone=l.timezone||null,l.noCache=s.clearDataCacheOnLoad||!1,s.ngModel?(l.active=l.$parent.$eval(s.ngModel),s.ngModel&&l.$watch("$parent."+s.ngModel,function(t){l.active=t})):l.active=null,l.titleFormat=l.titleFormat||"MMMM yyyy",l.dayLabelFormat=l.dayLabelFormat||"EEE",l.dayLabelTooltipFormat=l.dayLabelTooltipFormat||"EEEE",l.dayFormat=l.dayFormat||"d",l.dayTooltipFormat=l.dayTooltipFormat||"fullDate",l.disableFutureSelection=l.disableFutureSelection||!1,l.sameMonth=function(t){var a=angular.copy(t);return a.getFullYear()===l.calendar.year&&a.getMonth()===l.calendar.month},l.isDisabled=function(t){return l.disableFutureSelection&&t>new Date?!0:!l.sameMonth(t)},l.calendarDirection=l.calendarDirection||"horizontal",l.$watch("calendarDirection",function(t){l.weekLayout="horizontal"===t?"row":"column"}),l.$watch("weekLayout",function(){h=l.calendar.year,m=l.calendar.month,k()});var g=function(t,a){(t||angular.noop)(a)},y=function(t,a){var e=-1;return angular.forEach(t,function(t,n){0>e&&angular.equals(a,t)&&(e=n)}),e};l.isActive=function(t){var a,e=angular.copy(l.active);return a=angular.isArray(e)?y(e,t)>-1:angular.equals(t,e)},l.prev=function(){l.calendar.prev();var t={year:l.calendar.year,month:l.calendar.month+1};w(),g(l.onPrevMonth,t)},l.next=function(){l.calendar.next();var t={year:l.calendar.year,month:l.calendar.month+1};w(),g(l.onNextMonth,t)},l.handleDayClick=function(t){if(!(l.disableFutureSelection&&t>new Date)){var e=angular.copy(l.active);if(angular.isArray(e)){var n=y(e,t);n>-1?e.splice(n,1):e.push(t)}else e=angular.equals(e,t)?null:t;l.active=e,s.ngModel&&a(s.ngModel).assign(l.$parent,angular.copy(l.active)),g(l.onDayClick,angular.copy(t))}};var v=function(a){c.html(a),t(c.contents())(l)},p=function(){l.calendar=new o(h,m,{weekStartsOn:l.weekStartsOn||0});var t=n.defer();return l.templateUrl?e.get(l.templateUrl).success(t.resolve).error(t.reject):t.resolve(l.template()||i),t.promise};l.dataService=r;var f=function(t){return l.dataService.getDayKey(t)};l.dayKey=f;var b=function(t){l.noCache?l.dataService.setDayContent(t,""):l.dataService.setDayContent(t,l.dataService.data[f(t)]||"");var a=(l.dayContent||angular.noop)(),e=(a||angular.noop)(t);angular.isObject(e)&&"function"==typeof e.success?e.success(function(a){l.dataService.setDayContent(t,a)}):angular.isObject(e)&&"function"==typeof e.then?e.then(function(a){l.dataService.setDayContent(t,a)}):l.dataService.setDayContent(t,e)},w=function(){angular.forEach(l.calendar.weeks,function(t){angular.forEach(t,b)})};window.data=l.data;var k=function(){p().then(function(t){v(t),w()})};l.$watch("weekStartsOn",p),k(),l._$$init=p,l._$$setTemplate=v,l._$$bootstrap=k}}}]);
+},{}],15:[function(require,module,exports){
 /*!
  * Angular Material Design
  * https://github.com/angular/material
@@ -29271,7 +29309,7 @@ angular.module("material.core").constant("$MD_THEME_CSS", "md-autocomplete.md-TH
 
 
 })(window, window.angular);;window.ngMaterial={version:{full: "1.0.6"}};
-},{}],14:[function(require,module,exports){
+},{}],16:[function(require,module,exports){
 /**
  * @license AngularJS v1.5.0
  * (c) 2010-2016 Google, Inc. http://angularjs.org
@@ -30289,11 +30327,11 @@ function ngViewFillContentFactory($compile, $controller, $route) {
 
 })(window, window.angular);
 
-},{}],15:[function(require,module,exports){
+},{}],17:[function(require,module,exports){
 require('./angular-route');
 module.exports = 'ngRoute';
 
-},{"./angular-route":14}],16:[function(require,module,exports){
+},{"./angular-route":16}],18:[function(require,module,exports){
 /**
  * @license AngularJS v1.5.0
  * (c) 2010-2016 Google, Inc. http://angularjs.org
@@ -31012,11 +31050,11 @@ angular.module('ngSanitize').filter('linky', ['$sanitize', function($sanitize) {
 
 })(window, window.angular);
 
-},{}],17:[function(require,module,exports){
+},{}],19:[function(require,module,exports){
 require('./angular-sanitize');
 module.exports = 'ngSanitize';
 
-},{"./angular-sanitize":16}],18:[function(require,module,exports){
+},{"./angular-sanitize":18}],20:[function(require,module,exports){
 /**
  * @license AngularJS v1.5.0
  * (c) 2010-2016 Google, Inc. http://angularjs.org
@@ -61445,11 +61483,11 @@ $provide.value("$locale", {
 })(window, document);
 
 !window.angular.$$csp().noInlineStyle && window.angular.element(document.head).prepend('<style type="text/css">@charset "UTF-8";[ng\\:cloak],[ng-cloak],[data-ng-cloak],[x-ng-cloak],.ng-cloak,.x-ng-cloak,.ng-hide:not(.ng-hide-animate){display:none !important;}ng\\:form{display:block;}.ng-animate-shim{visibility:hidden;}.ng-anchor{position:absolute;}</style>');
-},{}],19:[function(require,module,exports){
+},{}],21:[function(require,module,exports){
 require('./angular');
 module.exports = angular;
 
-},{"./angular":18}],20:[function(require,module,exports){
+},{"./angular":20}],22:[function(require,module,exports){
 /*!
  * AngularFire is the officially supported AngularJS binding for Firebase. Firebase
  * is a full backend so you don't need servers to build your Angular app. AngularFire
@@ -63729,7 +63767,7 @@ if ( typeof Object.getPrototypeOf !== "function" ) {
     }
 })();
 
-},{}],21:[function(require,module,exports){
+},{}],23:[function(require,module,exports){
 // http://wiki.commonjs.org/wiki/Unit_Testing/1.0
 //
 // THIS IS NOT TESTED NOR LIKELY TO WORK OUTSIDE V8!
@@ -64090,7 +64128,7 @@ var objectKeys = Object.keys || function (obj) {
   return keys;
 };
 
-},{"util/":60}],22:[function(require,module,exports){
+},{"util/":62}],24:[function(require,module,exports){
 'use strict'
 
 exports.toByteArray = toByteArray
@@ -64206,9 +64244,9 @@ function fromByteArray (uint8) {
   return parts.join('')
 }
 
-},{}],23:[function(require,module,exports){
+},{}],25:[function(require,module,exports){
 
-},{}],24:[function(require,module,exports){
+},{}],26:[function(require,module,exports){
 (function (global){
 /*!
  * The buffer module from node.js, for the browser.
@@ -65674,14 +65712,14 @@ function blitBuffer (src, dst, offset, length) {
 }
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"base64-js":22,"ieee754":27,"isarray":25}],25:[function(require,module,exports){
+},{"base64-js":24,"ieee754":29,"isarray":27}],27:[function(require,module,exports){
 var toString = {}.toString;
 
 module.exports = Array.isArray || function (arr) {
   return toString.call(arr) == '[object Array]';
 };
 
-},{}],26:[function(require,module,exports){
+},{}],28:[function(require,module,exports){
 /*! @license Firebase v2.4.1
     License: https://www.firebase.com/terms/terms-of-service.html */
 (function() {var h,n=this;function p(a){return void 0!==a}function aa(){}function ba(a){a.yb=function(){return a.zf?a.zf:a.zf=new a}}
@@ -65962,7 +66000,7 @@ X.prototype.Ze=function(a,b){D("Firebase.resetPassword",1,2,arguments.length);sg
 
 module.exports = Firebase;
 
-},{}],27:[function(require,module,exports){
+},{}],29:[function(require,module,exports){
 exports.read = function (buffer, offset, isLE, mLen, nBytes) {
   var e, m
   var eLen = nBytes * 8 - mLen - 1
@@ -66048,7 +66086,7 @@ exports.write = function (buffer, value, offset, isLE, mLen, nBytes) {
   buffer[offset + i - d] |= s * 128
 }
 
-},{}],28:[function(require,module,exports){
+},{}],30:[function(require,module,exports){
 if (typeof Object.create === 'function') {
   // implementation from standard node.js 'util' module
   module.exports = function inherits(ctor, superCtor) {
@@ -66073,7 +66111,7 @@ if (typeof Object.create === 'function') {
   }
 }
 
-},{}],29:[function(require,module,exports){
+},{}],31:[function(require,module,exports){
 "use strict";
 
 var os = require("os");
@@ -66198,7 +66236,7 @@ module.exports = function generateSourcemap(result, src, nodePositions, fragment
     }
 }
 
-},{"convert-source-map":37,"os":51,"source-map":48,"stable":56}],30:[function(require,module,exports){
+},{"convert-source-map":39,"os":53,"source-map":50,"stable":58}],32:[function(require,module,exports){
 // lut.js
 // MIT licensed, see LICENSE file
 // Copyright (c) 2013-2016 Olov Lassus <olov.lassus@gmail.com>
@@ -66326,7 +66364,7 @@ function last(arr) {
     return arr[arr.length - 1];
 }
 
-},{"assert":21,"ordered-ast-traverse":49,"simple-is":55}],31:[function(require,module,exports){
+},{"assert":23,"ordered-ast-traverse":51,"simple-is":57}],33:[function(require,module,exports){
 // ng-annotate-main.js
 // MIT licensed, see LICENSE file
 // Copyright (c) 2013-2016 Olov Lassus <olov.lassus@gmail.com>
@@ -67554,7 +67592,7 @@ module.exports = function ngAnnotate(src, options) {
     return result;
 }
 
-},{"./generate-sourcemap":29,"./lut":30,"./nginject":32,"./optionals/angular-dashboard-framework":33,"./scopetools":35,"acorn":36,"alter":8,"assert":21,"ordered-ast-traverse":49,"os":51,"simple-fmt":54,"simple-is":55,"stringmap":57}],32:[function(require,module,exports){
+},{"./generate-sourcemap":31,"./lut":32,"./nginject":34,"./optionals/angular-dashboard-framework":35,"./scopetools":37,"acorn":38,"alter":9,"assert":23,"ordered-ast-traverse":51,"os":53,"simple-fmt":56,"simple-is":57,"stringmap":59}],34:[function(require,module,exports){
 // nginject.js
 // MIT licensed, see LICENSE file
 // Copyright (c) 2013-2016 Olov Lassus <olov.lassus@gmail.com>
@@ -67762,7 +67800,7 @@ function nestedObjectValues(node, res) {
     return res;
 }
 
-},{"simple-is":55}],33:[function(require,module,exports){
+},{"simple-is":57}],35:[function(require,module,exports){
 "use strict";
 
 var ctx = null;
@@ -67831,7 +67869,7 @@ module.exports = {
     }
 };
 
-},{}],34:[function(require,module,exports){
+},{}],36:[function(require,module,exports){
 // scope.js
 // MIT licensed, see LICENSE file
 // Copyright (c) 2013-2016 Olov Lassus <olov.lassus@gmail.com>
@@ -67991,7 +68029,7 @@ Scope.prototype.lookup = function(name) {
 
 module.exports = Scope;
 
-},{"assert":21,"simple-fmt":54,"simple-is":55,"stringmap":57,"stringset":58}],35:[function(require,module,exports){
+},{"assert":23,"simple-fmt":56,"simple-is":57,"stringmap":59,"stringset":60}],37:[function(require,module,exports){
 // scopetools.js
 // MIT licensed, see LICENSE file
 // Copyright (c) 2013-2016 Olov Lassus <olov.lassus@gmail.com>
@@ -68173,7 +68211,7 @@ function isReference(node) {
             true;
 }
 
-},{"./scope":34,"assert":21,"ordered-ast-traverse":49,"simple-is":55}],36:[function(require,module,exports){
+},{"./scope":36,"assert":23,"ordered-ast-traverse":51,"simple-is":57}],38:[function(require,module,exports){
 (function (global){
 (function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.acorn = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(_dereq_,module,exports){
 // A recursive descent parser operates by defining functions for all
@@ -71506,7 +71544,7 @@ exports.nonASCIIwhitespace = nonASCIIwhitespace;
 },{}]},{},[3])(3)
 });
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],37:[function(require,module,exports){
+},{}],39:[function(require,module,exports){
 (function (Buffer){
 'use strict';
 var fs = require('fs');
@@ -71666,7 +71704,7 @@ Object.defineProperty(exports, 'mapFileCommentRegex', {
 });
 
 }).call(this,require("buffer").Buffer)
-},{"buffer":24,"fs":23,"path":52}],38:[function(require,module,exports){
+},{"buffer":26,"fs":25,"path":54}],40:[function(require,module,exports){
 /* -*- Mode: js; js-indent-level: 2; -*- */
 /*
  * Copyright 2011 Mozilla Foundation and contributors
@@ -71772,7 +71810,7 @@ Object.defineProperty(exports, 'mapFileCommentRegex', {
   exports.ArraySet = ArraySet;
 }
 
-},{"./util":47}],39:[function(require,module,exports){
+},{"./util":49}],41:[function(require,module,exports){
 /* -*- Mode: js; js-indent-level: 2; -*- */
 /*
  * Copyright 2011 Mozilla Foundation and contributors
@@ -71915,7 +71953,7 @@ Object.defineProperty(exports, 'mapFileCommentRegex', {
   };
 }
 
-},{"./base64":40}],40:[function(require,module,exports){
+},{"./base64":42}],42:[function(require,module,exports){
 /* -*- Mode: js; js-indent-level: 2; -*- */
 /*
  * Copyright 2011 Mozilla Foundation and contributors
@@ -71985,7 +72023,7 @@ Object.defineProperty(exports, 'mapFileCommentRegex', {
   };
 }
 
-},{}],41:[function(require,module,exports){
+},{}],43:[function(require,module,exports){
 /* -*- Mode: js; js-indent-level: 2; -*- */
 /*
  * Copyright 2011 Mozilla Foundation and contributors
@@ -72099,7 +72137,7 @@ Object.defineProperty(exports, 'mapFileCommentRegex', {
   };
 }
 
-},{}],42:[function(require,module,exports){
+},{}],44:[function(require,module,exports){
 /* -*- Mode: js; js-indent-level: 2; -*- */
 /*
  * Copyright 2014 Mozilla Foundation and contributors
@@ -72181,7 +72219,7 @@ Object.defineProperty(exports, 'mapFileCommentRegex', {
   exports.MappingList = MappingList;
 }
 
-},{"./util":47}],43:[function(require,module,exports){
+},{"./util":49}],45:[function(require,module,exports){
 /* -*- Mode: js; js-indent-level: 2; -*- */
 /*
  * Copyright 2011 Mozilla Foundation and contributors
@@ -72298,7 +72336,7 @@ Object.defineProperty(exports, 'mapFileCommentRegex', {
   };
 }
 
-},{}],44:[function(require,module,exports){
+},{}],46:[function(require,module,exports){
 /* -*- Mode: js; js-indent-level: 2; -*- */
 /*
  * Copyright 2011 Mozilla Foundation and contributors
@@ -73382,7 +73420,7 @@ Object.defineProperty(exports, 'mapFileCommentRegex', {
   exports.IndexedSourceMapConsumer = IndexedSourceMapConsumer;
 }
 
-},{"./array-set":38,"./base64-vlq":39,"./binary-search":41,"./quick-sort":43,"./util":47}],45:[function(require,module,exports){
+},{"./array-set":40,"./base64-vlq":41,"./binary-search":43,"./quick-sort":45,"./util":49}],47:[function(require,module,exports){
 /* -*- Mode: js; js-indent-level: 2; -*- */
 /*
  * Copyright 2011 Mozilla Foundation and contributors
@@ -73780,7 +73818,7 @@ Object.defineProperty(exports, 'mapFileCommentRegex', {
   exports.SourceMapGenerator = SourceMapGenerator;
 }
 
-},{"./array-set":38,"./base64-vlq":39,"./mapping-list":42,"./util":47}],46:[function(require,module,exports){
+},{"./array-set":40,"./base64-vlq":41,"./mapping-list":44,"./util":49}],48:[function(require,module,exports){
 /* -*- Mode: js; js-indent-level: 2; -*- */
 /*
  * Copyright 2011 Mozilla Foundation and contributors
@@ -74190,7 +74228,7 @@ Object.defineProperty(exports, 'mapFileCommentRegex', {
   exports.SourceNode = SourceNode;
 }
 
-},{"./source-map-generator":45,"./util":47}],47:[function(require,module,exports){
+},{"./source-map-generator":47,"./util":49}],49:[function(require,module,exports){
 /* -*- Mode: js; js-indent-level: 2; -*- */
 /*
  * Copyright 2011 Mozilla Foundation and contributors
@@ -74561,7 +74599,7 @@ Object.defineProperty(exports, 'mapFileCommentRegex', {
   exports.compareByGeneratedPositionsInflated = compareByGeneratedPositionsInflated;
 }
 
-},{}],48:[function(require,module,exports){
+},{}],50:[function(require,module,exports){
 /*
  * Copyright 2009-2011 Mozilla Foundation and contributors
  * Licensed under the New BSD license. See LICENSE.txt or:
@@ -74571,7 +74609,7 @@ exports.SourceMapGenerator = require('./lib/source-map-generator').SourceMapGene
 exports.SourceMapConsumer = require('./lib/source-map-consumer').SourceMapConsumer;
 exports.SourceNode = require('./lib/source-node').SourceNode;
 
-},{"./lib/source-map-consumer":44,"./lib/source-map-generator":45,"./lib/source-node":46}],49:[function(require,module,exports){
+},{"./lib/source-map-consumer":46,"./lib/source-map-generator":47,"./lib/source-node":48}],51:[function(require,module,exports){
 // ordered-ast-traverse.js
 // MIT licensed, see LICENSE file
 // Copyright (c) 2014-2015 Olov Lassus <olov.lassus@gmail.com>
@@ -74634,7 +74672,7 @@ if (typeof module !== "undefined" && typeof module.exports !== "undefined") {
     module.exports = traverse;
 }
 
-},{"ordered-esprima-props":50}],50:[function(require,module,exports){
+},{"ordered-esprima-props":52}],52:[function(require,module,exports){
 // ordered-esprima-props.js
 // MIT licensed, see LICENSE file
 // Copyright (c) 2014 Olov Lassus <olov.lassus@gmail.com>
@@ -74714,7 +74752,7 @@ module.exports = (function() {
     };
 })();
 
-},{}],51:[function(require,module,exports){
+},{}],53:[function(require,module,exports){
 exports.endianness = function () { return 'LE' };
 
 exports.hostname = function () {
@@ -74761,7 +74799,7 @@ exports.tmpdir = exports.tmpDir = function () {
 
 exports.EOL = '\n';
 
-},{}],52:[function(require,module,exports){
+},{}],54:[function(require,module,exports){
 (function (process){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -74989,7 +75027,7 @@ var substr = 'ab'.substr(-1) === 'b'
 ;
 
 }).call(this,require('_process'))
-},{"_process":53}],53:[function(require,module,exports){
+},{"_process":55}],55:[function(require,module,exports){
 // shim for using process in browser
 
 var process = module.exports = {};
@@ -75082,7 +75120,7 @@ process.chdir = function (dir) {
 };
 process.umask = function() { return 0; };
 
-},{}],54:[function(require,module,exports){
+},{}],56:[function(require,module,exports){
 // simple-fmt.js
 // MIT licensed, see LICENSE file
 // Copyright (c) 2013 Olov Lassus <olov.lassus@gmail.com>
@@ -75117,7 +75155,7 @@ if (typeof module !== "undefined" && typeof module.exports !== "undefined") {
     module.exports = fmt;
 }
 
-},{}],55:[function(require,module,exports){
+},{}],57:[function(require,module,exports){
 // simple-is.js
 // MIT licensed, see LICENSE file
 // Copyright (c) 2013 Olov Lassus <olov.lassus@gmail.com>
@@ -75175,7 +75213,7 @@ if (typeof module !== "undefined" && typeof module.exports !== "undefined") {
     module.exports = is;
 }
 
-},{}],56:[function(require,module,exports){
+},{}],58:[function(require,module,exports){
 //! stable.js 0.1.5, https://github.com/Two-Screen/stable
 //! © 2014 Angry Bytes and contributors. MIT licensed.
 
@@ -75288,7 +75326,7 @@ else {
 
 })();
 
-},{}],57:[function(require,module,exports){
+},{}],59:[function(require,module,exports){
 // stringmap.js
 // MIT licensed, see LICENSE file
 // Copyright (c) 2013 Olov Lassus <olov.lassus@gmail.com>
@@ -75534,7 +75572,7 @@ if (typeof module !== "undefined" && typeof module.exports !== "undefined") {
     module.exports = StringMap;
 }
 
-},{}],58:[function(require,module,exports){
+},{}],60:[function(require,module,exports){
 // stringset.js
 // MIT licensed, see LICENSE file
 // Copyright (c) 2013 Olov Lassus <olov.lassus@gmail.com>
@@ -75717,14 +75755,14 @@ if (typeof module !== "undefined" && typeof module.exports !== "undefined") {
     module.exports = StringSet;
 }
 
-},{}],59:[function(require,module,exports){
+},{}],61:[function(require,module,exports){
 module.exports = function isBuffer(arg) {
   return arg && typeof arg === 'object'
     && typeof arg.copy === 'function'
     && typeof arg.fill === 'function'
     && typeof arg.readUInt8 === 'function';
 }
-},{}],60:[function(require,module,exports){
+},{}],62:[function(require,module,exports){
 (function (process,global){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -76314,4 +76352,4 @@ function hasOwnProperty(obj, prop) {
 }
 
 }).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./support/isBuffer":59,"_process":53,"inherits":28}]},{},[1]);
+},{"./support/isBuffer":61,"_process":55,"inherits":30}]},{},[1]);

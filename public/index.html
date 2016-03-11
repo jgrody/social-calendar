@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>My AngularJS App</title>
+    <title>Social Calendar</title>
     <meta name="description" content="">
     <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no" />
 
@@ -28,7 +28,9 @@
         </div>
       </md-toolbar>
       <md-list>
-        <md-list-item ng-click="navigateTo(link.sref, $event)" ng-repeat="link in links">
+        <md-list-item
+            ng-click="navigateTo(link.path)"
+            ng-repeat="link in links">
           <md-icon md-svg-icon="{{link.icon}}"></md-icon>
           <p> {{ link.title }} </p>
         </md-list-item>
@@ -51,11 +53,17 @@
           <h3>Dashboard</h3>
           <span flex></span>
 
-          <md-button class="pull-right" ng-click="login()">
+          <md-button
+              class="pull-right"
+              ng-click="login()"
+              ng-hide="loggedIn">
             Login
           </md-button>
 
-          <md-button class="pull-right" ng-click="logout()">
+          <md-button
+              class="pull-right"
+              ng-click="logout()"
+              ng-show="loggedIn">
             Logout
           </md-button>
         </div>
@@ -63,12 +71,8 @@
       </md-toolbar>
 
       <md-content flex md-scroll-y>
-        <ui-view layout="column" layout-fill layout-padding>
-          <div flex-gt-sm="90"
-               flex-gt-md="90"
-               flex-sm="90"
-               ng-view>
-          </div>
+        <ui-view layout="column">
+          <div ng-view></div>
         </ui-view>
       </md-content>
     </div>

@@ -7,7 +7,7 @@ var ngAnnotate = require('gulp-ng-annotate');
 
 gulp.task('connect', function() {
   connect.server({
-    root: ['public', 'app'],
+    root: ['public'],
     port: 4000
   })
 })
@@ -27,9 +27,15 @@ gulp.task('sass', function() {
     .pipe(gulp.dest('public/css'))
 })
 
-gulp.task('watch', function() {
-  gulp.watch('app/**/*.js', ['browserify'])
-  gulp.watch('sass/style.sass', ['sass'])
+gulp.task('copy', function(){
+  return gulp.src('./app/**/*.html')
+    .pipe(gulp.dest('./public'));
 })
 
-gulp.task('default', ['connect', 'watch'])
+gulp.task('watch', function() {
+  gulp.watch('app/**/*.js', ['browserify']);
+  gulp.watch('app/**/*.html', ['copy']);
+  gulp.watch('sass/style.sass', ['sass']);
+})
+
+gulp.task('default', ['connect', 'copy', 'watch'])
