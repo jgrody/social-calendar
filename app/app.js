@@ -12,19 +12,30 @@ angular.module("app", [
   "ng",
   "ngAria",
   "firebase",
-  "ngMaterial",
   "ngRoute",
   require('./config').name,
   require('./login').name,
-  require('./home').name
+  require('./home').name,
+  require('./calendar').name
 ])
-  .controller('LayoutController', function($scope, $mdSidenav, loginFactory){
+  .controller('LayoutController', function($scope, $mdSidenav, loginFactory, $location){
+    $scope.links = [
+      {
+        title: 'Calendar',
+        path: '/calendar'
+      },
+      {
+        title: 'Home',
+        path: '/home'
+      }
+    ]
+
     $scope.toggleSidenav = function(menuId) {
       $mdSidenav(menuId).toggle();
     };
 
-    $scope.navigateTo = function(sref){
-      $state.go(sref);
+    $scope.navigateTo = function(path){
+      $location.path(path);
       $mdSidenav('left').toggle();
     }
 
@@ -36,7 +47,10 @@ angular.module("app", [
       loginFactory.logout();
     }
   })
-  .config(function ($routeProvider) {
+  .config(function ($routeProvider, $locationProvider) {
+    $locationProvider
+      .hashPrefix('');
+
     $routeProvider.otherwise({
       redirectTo: '/home'
     });
