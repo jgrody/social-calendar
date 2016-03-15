@@ -1,7 +1,7 @@
-module.exports = function($q, loginFactory, ezfb){
+module.exports = function($q, authFactory, ezfb){
   "ngInject";
 
-  var user = loginFactory.getUser();
+  var user = authFactory.getUser();
 
   function extendParams(options){
     options = options || {};
@@ -13,18 +13,17 @@ module.exports = function($q, loginFactory, ezfb){
   function request(){
     var deferred = $q.defer();
     var args = [].slice.call(arguments);
-    // If 4 arguments are passed, the params will be
-    // in the 2nd position in the array, otherwise, we
-    // assume 3 arguments were passed, in which case, the params
-    // are in the 2nd position in the array
+
+    // Vars set to retrieve position of params and the callback
+    // function in the passed in arguments. Reason for this is that
+    // passing the method is optional so there will either be 3 arguments
+    // or there will be 4 to specify a method other than 'GET'
     var paramsIndex = (args.length > 3) ? 2 : 1;
     var callbackIndex = (args.length > 3) ? 3 : 2;
 
     // We are:
-    // 1). resetting the params object within args
-    //     to include the access_token on every request
+    // 1). extending params to include the access_token on every request
     // 2). modifying the callback to utilize our deferred object
-
     args[paramsIndex] = extendParams(args[paramsIndex]);
     args[callbackIndex] = function(res){
       if (!res || res.error) {
@@ -39,8 +38,11 @@ module.exports = function($q, loginFactory, ezfb){
   }
 
   return {
-    getMyLastName: function() {
-      return request('/me/likes', {}, function(res){
+    getEvents: function(params) {
+      return request('/search?', {
+        q: params.location,
+        type: 'event'
+      }, function(res){
         console.log("res: ", res);
       });
     }

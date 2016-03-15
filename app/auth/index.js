@@ -1,4 +1,5 @@
 module.exports = angular.module('app.auth', [
-  require('../config').name
+  require('config').name
 ])
-  .factory('Auth', require('./factory'));
+  .factory('Auth', require('./ref'))
+  .factory('authFactory', require('./factory'))

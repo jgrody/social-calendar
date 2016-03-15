@@ -1,12 +1,18 @@
 module.exports = angular.module('app.home', [
+  require('angular-modules/sanitized').name
 ])
   .controller('HomeController', function($scope, user, facebookService){
-    window.user = user;
-    facebookService.getMyLastName(user)
-      .then(function(data){
-        console.log("data: ", data);
+    $scope.options = {};
+    window.scope = $scope;
 
+    $scope.search = function(){
+      facebookService.getEvents({
+        location: $scope.options.search
       })
+      .then(function(data){
+        $scope.events = data.data;
+      })
+    }
   })
   .config(function($routeProvider){
     $routeProvider.when('/home', {

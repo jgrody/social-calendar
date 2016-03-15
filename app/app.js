@@ -1,28 +1,17 @@
-require('angular');
-require('angular-aria');
-require('angular-animate');
-require('angular-material/angular-material');
-require('angular-sanitize');
-require('angular-route');
-require('ng-annotate');
-require('firebase');
-require('angularfire/dist/angularfire');
-require('angular-easyfb/src/angular-easyfb');
-require('sugar/release/sugar-full.development');
-
 angular.module('app', [
   'ng',
   'ngAria',
   'firebase',
   'ngRoute',
   'ezfb',
-  require('./config').name,
-  require('./layout').name,
-  require('./login').name,
-  require('./facebook').name,
-  require('./home').name,
-  require('./calendar').name,
-  require('./schedule').name
+  require('angular-modules/filters').name,
+  require('config').name,
+  require('layout').name,
+  require('auth').name,
+  require('facebook').name,
+  require('home').name,
+  require('calendar').name,
+  require('schedule').name,
 ])
   .config(function ($routeProvider, $locationProvider) {
     $routeProvider.otherwise({

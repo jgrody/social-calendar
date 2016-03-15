@@ -1,19 +1,37 @@
-<p>home</p>
-<!-- <calendar-md flex layout layout-fill
-  calendar-direction="direction"
-  on-prev-month="prevMonth"
-  on-next-month="nextMonth"
-  on-day-click="dayClick"
-  title-format="'MMMM y'"
-  ng-model='selectedDate'
-  week-starts-on="firstDayOfWeek"
-  data-start-month="8"
-  data-start-year="2014"
-  tooltips="tooltips"
-  day-format="dayFormat"
-  day-label-format="'EEE'"
-  day-label-tooltip-format="'EEEE'"
-  day-tooltip-format="'fullDate'"
-  day-content="setDayContent"
-  disable-future-selection="false"
-</calendar-md> -->
+<div class="row">
+  <div class="col-xs-12">
+    <form class="col-xs-10 col-xs-offset-1 form-horizontal"
+          ng-submit="search()">
+      <div class="form-group push-bottom-xl">
+        <input type="text"
+               class="form-control col-md-12"
+               placeholder="Search"
+               ng-model="options.search">
+      </div>
+    </form>
+  </div>
+</div>
+<div class="row">
+  <div class="col-xs-10 col-xs-offset-1">
+    <div class="list-group">
+      <div class="list-group-item" ng-repeat="event in events">
+        <!-- <div class="row-action-primary">
+          <i class="material-icons">folder</i>
+        </div> -->
+        <div class="row-content">
+          <div class="least-content">
+            {{event.start_time | dateFilter}}
+          </div>
+          <h4 class="list-group-item-heading">
+            {{event.name}}
+          </h4>
+          <p class="list-group-item-text"
+             sanitized="event.description">
+          </p>
+        </div>
+
+        <div class="list-group-separator"></div>
+      </div>
+    </div>
+  </div>
+</div>
