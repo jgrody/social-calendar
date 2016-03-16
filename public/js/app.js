@@ -14,13 +14,14 @@ angular.module('app', [
   require('home').name,
   require('calendar').name,
   require('schedule').name,
+  require('login').name,
 ])
   .config(["$routeProvider", "$locationProvider", function ($routeProvider, $locationProvider) {
     $routeProvider.otherwise({
       redirectTo: '/home'
     });
   }])
-  .run(["$rootScope", "Auth", "ezfb", function($rootScope, Auth, ezfb) {
+  .run(["$rootScope", "Auth", "ezfb", "$location", function($rootScope, Auth, ezfb, $location) {
     window.rootScope = $rootScope;
 
     ezfb.init({
@@ -33,10 +34,16 @@ angular.module('app', [
 
     Auth.$onAuth(function(user) {
       $rootScope.user = user;
+
+      if (user){
+        $location.path("/home")
+      } else {
+        $location.path("/login")
+      }
     });
   }]);
 
-},{"auth":3,"calendar":5,"config":6,"facebook":8,"home":9,"layout":10,"modules/filters":13,"modules/spinners":17,"schedule":11}],2:[function(require,module,exports){
+},{"auth":3,"calendar":5,"config":6,"facebook":8,"home":9,"layout":10,"login":11,"modules/filters":14,"modules/spinners":18,"schedule":12}],2:[function(require,module,exports){
 module.exports = ["Auth", function(Auth){
   "ngInject";
 
@@ -212,7 +219,7 @@ module.exports = angular.module('app.home', [
     });
   }])
 
-},{"modules/sanitized":16}],10:[function(require,module,exports){
+},{"modules/sanitized":17}],10:[function(require,module,exports){
 module.exports = angular.module('app.layout', [
 ]).controller('LayoutController', ["$scope", "authFactory", "$location", function($scope, authFactory, $location){
     $scope.links = [
@@ -230,6 +237,24 @@ module.exports = angular.module('app.layout', [
     }
 }])
 },{}],11:[function(require,module,exports){
+module.exports = angular.module('app.login', [
+  require('modules/sanitized').name
+])
+  .controller('LoginController', ["$scope", function($scope){
+  }])
+  .config(["$routeProvider", function($routeProvider){
+    $routeProvider.when('/login', {
+      templateUrl: 'login/template.html',
+      controller: 'LoginController',
+      // resolve: {
+      //   user: ['Auth', function (Auth) {
+      //     return Auth.$waitForAuth();
+      //   }]
+      // }
+    });
+  }])
+
+},{"modules/sanitized":17}],12:[function(require,module,exports){
 module.exports = angular.module('app.schedule', [
 ])
   .controller('ScheduleController', ["$scope", "user", function($scope, user){
@@ -247,7 +272,7 @@ module.exports = angular.module('app.schedule', [
     });
   }])
 
-},{}],12:[function(require,module,exports){
+},{}],13:[function(require,module,exports){
 module.exports = ["$filter", function($filter){
   "ngInject";
   return function(date, format) {
@@ -258,12 +283,12 @@ module.exports = ["$filter", function($filter){
     }
   };
 }]
-},{}],13:[function(require,module,exports){
+},{}],14:[function(require,module,exports){
 module.exports = angular.module('modules.filters', [
   'ngSanitize'
 ])
   .filter('dateFilter', require('./date'))
-},{"./date":12}],14:[function(require,module,exports){
+},{"./date":13}],15:[function(require,module,exports){
 module.exports = ["$scope", "$sce", function($scope, $sce){
   "ngInject";
 
@@ -276,7 +301,7 @@ module.exports = ["$scope", "$sce", function($scope, $sce){
   });
 }]
 
-},{}],15:[function(require,module,exports){
+},{}],16:[function(require,module,exports){
 module.exports = function() {
   "ngInject";
 
@@ -286,20 +311,20 @@ module.exports = function() {
     controller: 'SanitizedController'
   }
 }
-},{}],16:[function(require,module,exports){
+},{}],17:[function(require,module,exports){
 module.exports = angular.module('modules.sanitize', [
   'ngSanitize'
 ])
   .directive("sanitized", require('./directive'))
   .controller("SanitizedController", require('./controller'))
 
-},{"./controller":14,"./directive":15}],17:[function(require,module,exports){
+},{"./controller":15,"./directive":16}],18:[function(require,module,exports){
 module.exports = angular.module('modules.spinners', ['angularSpinner'])
   .directive('smallSpinner', require('./small_spinner'))
   .directive('largeSpinner', require('./large_spinner'))
   .directive('spinner', require('./spinner'));
 
-},{"./large_spinner":18,"./small_spinner":19,"./spinner":20}],18:[function(require,module,exports){
+},{"./large_spinner":19,"./small_spinner":20,"./spinner":21}],19:[function(require,module,exports){
 largeSpinner.$inject = ["$parse"];
 function largeSpinner($parse) {
   "ngInject";
@@ -318,7 +343,7 @@ function largeSpinner($parse) {
 
 module.exports = largeSpinner;
 
-},{}],19:[function(require,module,exports){
+},{}],20:[function(require,module,exports){
 smallSpinner.$inject = ["$parse"];
 function smallSpinner($parse) {
   "ngInject";
@@ -337,7 +362,7 @@ function smallSpinner($parse) {
 
 module.exports = smallSpinner;
 
-},{}],20:[function(require,module,exports){
+},{}],21:[function(require,module,exports){
 var onStateChange = require('../utils/promise').onStateChange;
 
 // function replaceModalFocus(){
@@ -385,7 +410,7 @@ module.exports = function() {
   };
 };
 
-},{"../utils/promise":21}],21:[function(require,module,exports){
+},{"../utils/promise":22}],22:[function(require,module,exports){
 module.exports.onStateChange = function(callbacks) {
   return function(value) {
     if (!value) {

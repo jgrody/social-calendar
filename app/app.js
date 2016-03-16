@@ -13,13 +13,14 @@ angular.module('app', [
   require('home').name,
   require('calendar').name,
   require('schedule').name,
+  require('login').name,
 ])
   .config(function ($routeProvider, $locationProvider) {
     $routeProvider.otherwise({
       redirectTo: '/home'
     });
   })
-  .run(function($rootScope, Auth, ezfb) {
+  .run(function($rootScope, Auth, ezfb, $location) {
     window.rootScope = $rootScope;
 
     ezfb.init({
@@ -32,5 +33,11 @@ angular.module('app', [
 
     Auth.$onAuth(function(user) {
       $rootScope.user = user;
+
+      if (user){
+        $location.path("/home")
+      } else {
+        $location.path("/login")
+      }
     });
   });
