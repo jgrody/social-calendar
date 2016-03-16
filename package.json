@@ -26,7 +26,6 @@
     "angular-aria": "1.5.0",
     "angular-easyfb": "1.4.1",
     "angular-messages": "1.5.0",
-    "angular-modules": "^1.0.0",
     "angular-route": "1.5.0",
     "angular-sanitize": "1.5.0",
     "angularfire": "1.1.4",

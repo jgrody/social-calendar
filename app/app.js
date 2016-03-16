@@ -4,7 +4,7 @@ angular.module('app', [
   'firebase',
   'ngRoute',
   'ezfb',
-  require('angular-modules/filters').name,
+  require('modules/filters').name,
   require('config').name,
   require('layout').name,
   require('auth').name,

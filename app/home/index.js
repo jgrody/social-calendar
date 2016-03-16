@@ -1,5 +1,5 @@
 module.exports = angular.module('app.home', [
-  require('angular-modules/sanitized').name
+  require('modules/sanitized').name
 ])
   .controller('HomeController', function($scope, user, facebookService){
     $scope.options = {};
