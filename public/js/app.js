@@ -1,57 +1,12 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
-module.exports = ["$filter", function($filter){
-  "ngInject";
-  return function(date, format) {
-    if (format === "dateOnly") {
-      return $filter('date')(date, "MMM d, yyyy");
-    } else {
-      return $filter('date')(date, "MMM d, yyyy 'at' h:mm a");
-    }
-  };
-}]
-},{}],2:[function(require,module,exports){
-module.exports = angular.module('modules.filters', [
-  'ngSanitize'
-])
-  .filter('dateFilter', require('./date'))
-},{"./date":1}],3:[function(require,module,exports){
-module.exports = ["$scope", "$sce", function($scope, $sce){
-  "ngInject";
-
-  $scope.html = $sce.trustAsHtml($scope.sanitized);
-
-  // Once a value goes through the sanitizer it stops updating the DOM.
-  // This allows values to be dynamically updated.
-  $scope.$watch("sanitized", function(newContent){
-    $scope.html = $sce.trustAsHtml(newContent);
-  });
-}]
-
-},{}],4:[function(require,module,exports){
-module.exports = function() {
-  "ngInject";
-
-  return {
-    templateUrl: '/angular-modules/sanitized/template.html',
-    scope: { sanitized: '=' },
-    controller: 'SanitizedController'
-  }
-}
-},{}],5:[function(require,module,exports){
-module.exports = angular.module('modules.sanitize', [
-  'ngSanitize'
-])
-  .directive("sanitized", require('./directive'))
-  .controller("SanitizedController", require('./controller'))
-
-},{"./controller":3,"./directive":4}],6:[function(require,module,exports){
 angular.module('app', [
   'ng',
   'ngAria',
   'firebase',
   'ngRoute',
   'ezfb',
-  require('angular-modules/filters').name,
+  require('modules/filters').name,
+  require('modules/spinners').name,
   require('config').name,
   require('layout').name,
   require('auth').name,
@@ -81,7 +36,7 @@ angular.module('app', [
     });
   }]);
 
-},{"angular-modules/filters":2,"auth":8,"calendar":10,"config":11,"facebook":13,"home":14,"layout":15,"schedule":16}],7:[function(require,module,exports){
+},{"auth":3,"calendar":5,"config":6,"facebook":8,"home":9,"layout":10,"modules/filters":13,"modules/spinners":17,"schedule":11}],2:[function(require,module,exports){
 module.exports = ["Auth", function(Auth){
   "ngInject";
 
@@ -125,21 +80,21 @@ module.exports = ["Auth", function(Auth){
     getUser: getUser
   }
 }]
-},{}],8:[function(require,module,exports){
+},{}],3:[function(require,module,exports){
 module.exports = angular.module('app.auth', [
   require('config').name
 ])
   .factory('Auth', require('./ref'))
   .factory('authFactory', require('./factory'))
 
-},{"./factory":7,"./ref":9,"config":11}],9:[function(require,module,exports){
+},{"./factory":2,"./ref":4,"config":6}],4:[function(require,module,exports){
 module.exports = ["$firebaseAuth", "FBURL", function($firebaseAuth, FBURL){
   "ngInject";
 
   var ref = new Firebase(FBURL);
   return $firebaseAuth(ref);
 }]
-},{}],10:[function(require,module,exports){
+},{}],5:[function(require,module,exports){
 module.exports = angular.module('app.calendar', [
 ])
   .controller('CalendarController', ["$scope", "user", function($scope, user){
@@ -157,7 +112,7 @@ module.exports = angular.module('app.calendar', [
     });
   }])
 
-},{}],11:[function(require,module,exports){
+},{}],6:[function(require,module,exports){
 'use strict';
 
 // Declare app level module which depends on filters, and services
@@ -169,7 +124,7 @@ module.exports = angular.module('app.config', [])
 
   // your Firebase data URL goes here, no trailing slash
   .constant('FBURL', 'https://resplendent-fire-4818.firebaseio.com')
-},{}],12:[function(require,module,exports){
+},{}],7:[function(require,module,exports){
 module.exports = ["$q", "authFactory", "ezfb", function($q, authFactory, ezfb){
   "ngInject";
 
@@ -220,25 +175,28 @@ module.exports = ["$q", "authFactory", "ezfb", function($q, authFactory, ezfb){
     }
   }
 }]
-},{}],13:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
 module.exports = angular.module('app.facebook', [
 ])
   .factory('facebookService', require('./factory'))
 
-},{"./factory":12}],14:[function(require,module,exports){
+},{"./factory":7}],9:[function(require,module,exports){
 module.exports = angular.module('app.home', [
-  require('angular-modules/sanitized').name
+  require('modules/sanitized').name
 ])
   .controller('HomeController', ["$scope", "user", "facebookService", function($scope, user, facebookService){
     $scope.options = {};
     window.scope = $scope;
 
     $scope.search = function(){
-      facebookService.getEvents({
+      $scope.fetching = facebookService.getEvents({
         location: $scope.options.search
       })
       .then(function(data){
         $scope.events = data.data;
+      })
+      .finally(function(){
+        delete $scope.fetching;
       })
     }
   }])
@@ -254,7 +212,7 @@ module.exports = angular.module('app.home', [
     });
   }])
 
-},{"angular-modules/sanitized":5}],15:[function(require,module,exports){
+},{"modules/sanitized":16}],10:[function(require,module,exports){
 module.exports = angular.module('app.layout', [
 ]).controller('LayoutController', ["$scope", "authFactory", "$location", function($scope, authFactory, $location){
     $scope.links = [
@@ -271,7 +229,7 @@ module.exports = angular.module('app.layout', [
       authFactory.logout();
     }
 }])
-},{}],16:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 module.exports = angular.module('app.schedule', [
 ])
   .controller('ScheduleController', ["$scope", "user", function($scope, user){
@@ -289,4 +247,157 @@ module.exports = angular.module('app.schedule', [
     });
   }])
 
-},{}]},{},[6]);
+},{}],12:[function(require,module,exports){
+module.exports = ["$filter", function($filter){
+  "ngInject";
+  return function(date, format) {
+    if (format === "dateOnly") {
+      return $filter('date')(date, "MMM d, yyyy");
+    } else {
+      return $filter('date')(date, "MMM d, yyyy 'at' h:mm a");
+    }
+  };
+}]
+},{}],13:[function(require,module,exports){
+module.exports = angular.module('modules.filters', [
+  'ngSanitize'
+])
+  .filter('dateFilter', require('./date'))
+},{"./date":12}],14:[function(require,module,exports){
+module.exports = ["$scope", "$sce", function($scope, $sce){
+  "ngInject";
+
+  $scope.html = $sce.trustAsHtml($scope.sanitized);
+
+  // Once a value goes through the sanitizer it stops updating the DOM.
+  // This allows values to be dynamically updated.
+  $scope.$watch("sanitized", function(newContent){
+    $scope.html = $sce.trustAsHtml(newContent);
+  });
+}]
+
+},{}],15:[function(require,module,exports){
+module.exports = function() {
+  "ngInject";
+
+  return {
+    templateUrl: '/modules/sanitized/template.html',
+    scope: { sanitized: '=' },
+    controller: 'SanitizedController'
+  }
+}
+},{}],16:[function(require,module,exports){
+module.exports = angular.module('modules.sanitize', [
+  'ngSanitize'
+])
+  .directive("sanitized", require('./directive'))
+  .controller("SanitizedController", require('./controller'))
+
+},{"./controller":14,"./directive":15}],17:[function(require,module,exports){
+module.exports = angular.module('modules.spinners', ['angularSpinner'])
+  .directive('smallSpinner', require('./small_spinner'))
+  .directive('largeSpinner', require('./large_spinner'))
+  .directive('spinner', require('./spinner'));
+
+},{"./large_spinner":18,"./small_spinner":19,"./spinner":20}],18:[function(require,module,exports){
+largeSpinner.$inject = ["$parse"];
+function largeSpinner($parse) {
+  "ngInject";
+
+  return {
+    restrict: 'A',
+    template: '<a class="large-spinner" data-us-spinner="spinnerOptions"></a>',
+    scope: true,
+    link: function($scope, element, attrs) {
+      var defaultOptions = {radius:14, width:6, length:8};
+      var options = $parse(attrs.largeSpinner)($scope);
+      $scope.spinnerOptions = Object.merge(defaultOptions, options);
+    }
+  };
+};
+
+module.exports = largeSpinner;
+
+},{}],19:[function(require,module,exports){
+smallSpinner.$inject = ["$parse"];
+function smallSpinner($parse) {
+  "ngInject";
+  
+  return {
+    restrict: 'A',
+    template: '<a class="small-spinner" data-us-spinner="spinnerOptions"></a>',
+    scope: true,
+    link: function($scope, element, attrs) {
+      var defaultOptions = {radius:7, width:3, length:4};
+      var options = $parse(attrs.smallSpinner)($scope);
+      $scope.spinnerOptions = Object.merge(defaultOptions, options);
+    }
+  };
+};
+
+module.exports = smallSpinner;
+
+},{}],20:[function(require,module,exports){
+var onStateChange = require('../utils/promise').onStateChange;
+
+// function replaceModalFocus(){
+//   if ($('.modal-open').length && $('.modal:visible').length) {
+//     $('.modal:visible').focus();
+//   }
+// }
+
+module.exports = function() {
+  return {
+    templateUrl: '/modules/spinners/template.html',
+    transclude: true,
+    scope: true,
+    link: function($scope, element, attrs) {
+      $scope.size = attrs.size;
+
+      $scope.displayClass = function() {
+        var classes = {
+          'position-relative': $scope.showSpinner,
+          'clearfix': $scope.showSpinner,
+        };
+        var displayClass = attrs.display ? 'display-' + attrs.display : 'display-inline-block';
+        classes[displayClass] = true;
+        return classes;
+      };
+
+      $scope.$watch(attrs.spinner, onStateChange({
+        on: function() {
+          $scope.showSpinner = true;
+          element.addClass('spinner-visible');
+
+          // When a spinner is activated, often elements on the page are hidden/shown
+          // causing the keyboard to lose focus of the proper location in many instances,
+          // particularly modals. This is here to set the keyboard focus to the modal div
+          // when a spinner is activated thereby maintaining keyboard focus in the modal
+          // and allowing the user to still navigate within it.
+          // replaceModalFocus();
+        },
+        off: function() {
+          $scope.showSpinner = false;
+          element.removeClass('spinner-visible');
+        }
+      }));
+    }
+  };
+};
+
+},{"../utils/promise":21}],21:[function(require,module,exports){
+module.exports.onStateChange = function(callbacks) {
+  return function(value) {
+    if (!value) {
+      callbacks.off();
+      return;
+    }
+
+    callbacks.on();
+
+    value['finally'] && value['finally'](function() {
+      callbacks.off();
+    });
+  };
+};
+},{}]},{},[1]);
