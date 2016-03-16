@@ -6,11 +6,14 @@ module.exports = angular.module('app.home', [
     window.scope = $scope;
 
     $scope.search = function(){
-      facebookService.getEvents({
+      $scope.fetching = facebookService.getEvents({
         location: $scope.options.search
       })
       .then(function(data){
         $scope.events = data.data;
+      })
+      .finally(function(){
+        delete $scope.fetching;
       })
     }
   })

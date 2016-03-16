@@ -47,6 +47,7 @@ gulp.task('copy', function(){
 
 gulp.task('watch', function() {
   gulp.watch('app/**/*.js', ['browserify', 'copy']);
+  gulp.watch('modules/**/*.js', ['browserify', 'copy']);
   gulp.watch('app/**/*.html', ['copy']);
   gulp.watch('sass/style.sass', ['sass']);
 })
