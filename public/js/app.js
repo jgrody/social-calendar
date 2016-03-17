@@ -7,7 +7,6 @@ angular.module('app', [
   'ezfb',
   'ngMaterial',
   require('modules/filters').name,
-  require('modules/spinners').name,
   require('config').name,
   require('layout').name,
   require('auth').name,
@@ -44,7 +43,7 @@ angular.module('app', [
     });
   }]);
 
-},{"auth":3,"calendar":5,"config":6,"facebook":8,"home":9,"layout":10,"login":11,"modules/filters":14,"modules/spinners":18,"schedule":12}],2:[function(require,module,exports){
+},{"auth":3,"calendar":5,"config":6,"facebook":8,"home":9,"layout":10,"login":11,"modules/filters":14,"schedule":12}],2:[function(require,module,exports){
 module.exports = ["Auth", function(Auth){
   "ngInject";
 
@@ -328,111 +327,4 @@ module.exports = angular.module('modules.sanitize', [
   .directive("sanitized", require('./directive'))
   .controller("SanitizedController", require('./controller'))
 
-},{"./controller":15,"./directive":16}],18:[function(require,module,exports){
-module.exports = angular.module('modules.spinners', ['angularSpinner'])
-  .directive('smallSpinner', require('./small_spinner'))
-  .directive('largeSpinner', require('./large_spinner'))
-  .directive('spinner', require('./spinner'));
-
-},{"./large_spinner":19,"./small_spinner":20,"./spinner":21}],19:[function(require,module,exports){
-largeSpinner.$inject = ["$parse"];
-function largeSpinner($parse) {
-  "ngInject";
-
-  return {
-    restrict: 'A',
-    template: '<a class="large-spinner" data-us-spinner="spinnerOptions"></a>',
-    scope: true,
-    link: function($scope, element, attrs) {
-      var defaultOptions = {radius:14, width:6, length:8};
-      var options = $parse(attrs.largeSpinner)($scope);
-      $scope.spinnerOptions = Object.merge(defaultOptions, options);
-    }
-  };
-};
-
-module.exports = largeSpinner;
-
-},{}],20:[function(require,module,exports){
-smallSpinner.$inject = ["$parse"];
-function smallSpinner($parse) {
-  "ngInject";
-  
-  return {
-    restrict: 'A',
-    template: '<a class="small-spinner" data-us-spinner="spinnerOptions"></a>',
-    scope: true,
-    link: function($scope, element, attrs) {
-      var defaultOptions = {radius:7, width:3, length:4};
-      var options = $parse(attrs.smallSpinner)($scope);
-      $scope.spinnerOptions = Object.merge(defaultOptions, options);
-    }
-  };
-};
-
-module.exports = smallSpinner;
-
-},{}],21:[function(require,module,exports){
-var onStateChange = require('../utils/promise').onStateChange;
-
-// function replaceModalFocus(){
-//   if ($('.modal-open').length && $('.modal:visible').length) {
-//     $('.modal:visible').focus();
-//   }
-// }
-
-module.exports = function() {
-  return {
-    templateUrl: '/modules/spinners/template.html',
-    transclude: true,
-    scope: true,
-    link: function($scope, element, attrs) {
-      $scope.size = attrs.size;
-
-      $scope.displayClass = function() {
-        var classes = {
-          'position-relative': $scope.showSpinner,
-          'clearfix': $scope.showSpinner,
-        };
-        var displayClass = attrs.display ? 'display-' + attrs.display : 'display-inline-block';
-        classes[displayClass] = true;
-        return classes;
-      };
-
-      $scope.$watch(attrs.spinner, onStateChange({
-        on: function() {
-          $scope.showSpinner = true;
-          element.addClass('spinner-visible');
-
-          // When a spinner is activated, often elements on the page are hidden/shown
-          // causing the keyboard to lose focus of the proper location in many instances,
-          // particularly modals. This is here to set the keyboard focus to the modal div
-          // when a spinner is activated thereby maintaining keyboard focus in the modal
-          // and allowing the user to still navigate within it.
-          // replaceModalFocus();
-        },
-        off: function() {
-          $scope.showSpinner = false;
-          element.removeClass('spinner-visible');
-        }
-      }));
-    }
-  };
-};
-
-},{"../utils/promise":22}],22:[function(require,module,exports){
-module.exports.onStateChange = function(callbacks) {
-  return function(value) {
-    if (!value) {
-      callbacks.off();
-      return;
-    }
-
-    callbacks.on();
-
-    value['finally'] && value['finally'](function() {
-      callbacks.off();
-    });
-  };
-};
-},{}]},{},[1]);
+},{"./controller":15,"./directive":16}]},{},[1]);

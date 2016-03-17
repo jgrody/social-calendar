@@ -6,7 +6,6 @@ angular.module('app', [
   'ezfb',
   'ngMaterial',
   require('modules/filters').name,
-  require('modules/spinners').name,
   require('config').name,
   require('layout').name,
   require('auth').name,
