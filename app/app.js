@@ -4,6 +4,7 @@ angular.module('app', [
   'firebase',
   'ngRoute',
   'ezfb',
+  'ngMaterial',
   require('modules/filters').name,
   require('modules/spinners').name,
   require('config').name,

@@ -10,10 +10,7 @@ require('angular-easyfb/src/angular-easyfb');
 require('sugar/release/sugar-full.development');
 
 window.jQuery = require('jquery/dist/jquery.min');
-require('bootstrap/dist/js/bootstrap.min');
-require('bootstrap-material-design/dist/js/material.min');
-require('bootstrap-material-design/dist/js/ripples.min');
-
+require('angular-material/angular-material');
 
 // spin.js detects that it is required in a CommonJS environment
 // and does not pollute the global namespace, which angular-spinner

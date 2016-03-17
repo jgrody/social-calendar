@@ -13,30 +13,70 @@
   </head>
 
   <body ng-controller="LayoutController"
-        ng-cloak>
-    <div class="navbar navbar-default">
-      <div class="container-fluid">
-        <div class="navbar-header">
-          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-responsive-collapse">
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-          <a class="navbar-brand" href="javascript:void(0)">Social Calendar</a>
-        </div>
-        <div class="navbar-collapse collapse navbar-responsive-collapse">
-          <ul class="nav navbar-nav navbar-right">
-            <li><a href="javascript:void(0)" ng-click="login()" ng-if="!user">Login</a></li>
-            <li><a href="javascript:void(0)" ng-click="logout()" ng-if="user">Logout</a></li>
-          </ul>
-        </div>
-      </div>
-    </div>
+        ng-cloak
+        layout="row">
+ 
+    <md-sidenav
+        layout="column"
+        class="md-sidenav-left md-whiteframe-z2"
+        md-component-id="left"
+        md-is-locked-open="$mdMedia('gt-md')">
 
-    <div class="container-fluid" ng-view>
+      <md-toolbar class="md-tall md-hue-2">
+        <span flex></span>
+        <div layout="column" class="md-toolbar-tools-bottom inset">
+        </div>
+      </md-toolbar>
+      <md-list>
+        <md-list-item ng-click="navigateTo(link, $event)" ng-repeat="link in links">
+          <md-icon>{{link.icon}}</md-icon>
+          <p> {{ link.title }} </p>
+        </md-list-item>
+      </md-list>
+    </md-sidenav>
 
+    <div layout="column"
+         class="relative"
+         layout-fill
+         role="main">
+      <md-toolbar>
+        <div class="md-toolbar-tools">
+          <md-button
+              class="md-icon-button push-none pad-none"
+              ng-click="toggleSidenav('left')"
+              hide-gt-md
+              aria-label="Menu">
+            <md-icon>menu</md-icon>
+          </md-button>
+          <h3 class="push-left">Social Calendar</h3>
+          <span flex></span>
+
+          <md-button
+              class="pull-right"
+              ng-click="login()"
+              ng-if="!user">
+            Login
+          </md-button>
+
+          <md-button
+              class="pull-right"
+              ng-click="logout()"
+              ng-if="user">
+            Logout
+          </md-button>
+        </div>
+
+      </md-toolbar>
+
+      <md-content flex md-scroll-y>
+        <ui-view
+            layout="column"
+            layout-fill
+            layout-padding>
+          <div ng-view></div>
+        </ui-view>
+      </md-content>
     </div>
-    
   </body>
 
   <script src="/js/vendor.js"></script>

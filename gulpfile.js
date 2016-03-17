@@ -36,8 +36,11 @@ gulp.task('browserify', function() {
   })
 
 gulp.task('sass', function() {
-  return sass('sass/style.sass')
-    .pipe(gulp.dest('public/css'))
+  return sass('sass/style.sass', {
+    loadPath: ['./sass', './modules', './node_modules']
+  })
+  .on('error', sass.logError)
+  .pipe(gulp.dest('public/css'))
 })
 
 gulp.task('copy', function(){
