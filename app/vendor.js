@@ -11,9 +11,3 @@ require('sugar/release/sugar-full.development');
 
 window.jQuery = require('jquery/dist/jquery.min');
 require('angular-material/angular-material');
-
-// spin.js detects that it is required in a CommonJS environment
-// and does not pollute the global namespace, which angular-spinner
-// depends on
-window.Spinner = require('spin/spin');
-require('angular-spinner/angular-spinner.min');
