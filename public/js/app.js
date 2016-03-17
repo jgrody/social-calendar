@@ -7,6 +7,7 @@ angular.module('app', [
   'ezfb',
   'ngMaterial',
   require('modules/filters').name,
+  require('modules/progress').name,
   require('config').name,
   require('layout').name,
   require('auth').name,
@@ -43,8 +44,8 @@ angular.module('app', [
     });
   }]);
 
-},{"auth":3,"calendar":5,"config":6,"facebook":8,"home":9,"layout":10,"login":11,"modules/filters":14,"schedule":12}],2:[function(require,module,exports){
-module.exports = ["Auth", function(Auth){
+},{"auth":3,"calendar":5,"config":6,"facebook":8,"home":9,"layout":10,"login":11,"modules/filters":14,"modules/progress":15,"schedule":12}],2:[function(require,module,exports){
+module.exports = ["Auth", "DB", function(Auth, DB){
   "ngInject";
 
   function login(provider){
@@ -58,11 +59,41 @@ module.exports = ["Auth", function(Auth){
           Auth.$authWithOAuthRedirect(provider, function(error) { / */ });
         }
       } else if (authData) {
-        console.log("authData: ", authData);
       }
     }, {
       scope: 'email,user_likes,user_events'
     });
+  }
+
+  function checkUserExistence(authData){
+    return DB().child('users').child(authData.uid).once('value', function(snapshot){
+      var exists = (snapshot.val() !== null);
+      if (!exists) {
+        createUser(authData);
+      }
+    })
+  }
+
+  function createUser(authData){
+    DB().child("users").child(authData.uid).set({
+      provider: authData.provider,
+      name: getName(authData),
+      email: getEmail(authData)
+    });
+  }
+
+  function getName(authData) {
+    switch(authData.provider) {
+     case 'facebook':
+       return authData.facebook.displayName;
+    }
+  }
+
+  function getEmail(authData) {
+    switch(authData.provider) {
+     case 'facebook':
+       return authData.facebook.email;
+    }
   }
 
   function logout(){
@@ -75,7 +106,8 @@ module.exports = ["Auth", function(Auth){
 
   Auth.$onAuth(function(authData){
     if (authData) {
-      console.log("User " + authData.uid + " is logged in with " + authData.provider);
+      console.log("authData: ", authData);
+      checkUserExistence(authData);
     } else {
       console.log("User is logged out");
     }
@@ -131,6 +163,13 @@ module.exports = angular.module('app.config', [])
 
   // your Firebase data URL goes here, no trailing slash
   .constant('FBURL', 'https://resplendent-fire-4818.firebaseio.com')
+
+  .constant('DB', function(path){
+    var base = 'https://resplendent-fire-4818.firebaseio.com';
+    var url = path ? (base + '/' + path) : base;
+
+    return new Firebase(url);
+  })
 },{}],7:[function(require,module,exports){
 module.exports = ["$q", "authFactory", "ezfb", function($q, authFactory, ezfb){
   "ngInject";
@@ -174,7 +213,7 @@ module.exports = ["$q", "authFactory", "ezfb", function($q, authFactory, ezfb){
   return {
     getEvents: function(params) {
       return request('/search?', {
-        q: params.location,
+        q: params.query,
         type: 'event'
       }, function(res){
         console.log("res: ", res);
@@ -197,7 +236,7 @@ module.exports = angular.module('app.home', [
 
     $scope.search = function(){
       $scope.fetching = facebookService.getEvents({
-        location: $scope.options.search
+        query: $scope.options.search
       })
       .then(function(data){
         $scope.events = data.data;
@@ -219,7 +258,7 @@ module.exports = angular.module('app.home', [
     });
   }])
 
-},{"modules/sanitized":17}],10:[function(require,module,exports){
+},{"modules/sanitized":18}],10:[function(require,module,exports){
 module.exports = angular.module('app.layout', [
 ]).controller('LayoutController', ["$scope", "$mdSidenav", "authFactory", "$location", function($scope, $mdSidenav, authFactory, $location){
     $scope.links = [
@@ -263,7 +302,7 @@ module.exports = angular.module('app.login', [
     });
   }])
 
-},{"modules/sanitized":17}],12:[function(require,module,exports){
+},{"modules/sanitized":18}],12:[function(require,module,exports){
 module.exports = angular.module('app.schedule', [
 ])
   .controller('ScheduleController', ["$scope", "user", function($scope, user){
@@ -298,6 +337,17 @@ module.exports = angular.module('modules.filters', [
 ])
   .filter('dateFilter', require('./date'))
 },{"./date":13}],15:[function(require,module,exports){
+module.exports = angular.module('modules.progress', [
+  'ngMaterial'
+])
+  .directive("showProgress", function(){
+    return {
+      templateUrl: '/modules/progress/template.html',
+      scope: { show: '=showProgress' }
+    }
+  })
+
+},{}],16:[function(require,module,exports){
 module.exports = ["$scope", "$sce", function($scope, $sce){
   "ngInject";
 
@@ -310,7 +360,7 @@ module.exports = ["$scope", "$sce", function($scope, $sce){
   });
 }]
 
-},{}],16:[function(require,module,exports){
+},{}],17:[function(require,module,exports){
 module.exports = function() {
   "ngInject";
 
@@ -320,11 +370,11 @@ module.exports = function() {
     controller: 'SanitizedController'
   }
 }
-},{}],17:[function(require,module,exports){
+},{}],18:[function(require,module,exports){
 module.exports = angular.module('modules.sanitize', [
   'ngSanitize'
 ])
   .directive("sanitized", require('./directive'))
   .controller("SanitizedController", require('./controller'))
 
-},{"./controller":15,"./directive":16}]},{},[1]);
+},{"./controller":16,"./directive":17}]},{},[1]);

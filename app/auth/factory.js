@@ -1,4 +1,4 @@
-module.exports = function(Auth){
+module.exports = function(Auth, DB){
   "ngInject";
 
   function login(provider){
@@ -12,11 +12,41 @@ module.exports = function(Auth){
           Auth.$authWithOAuthRedirect(provider, function(error) { / */ });
         }
       } else if (authData) {
-        console.log("authData: ", authData);
       }
     }, {
       scope: 'email,user_likes,user_events'
     });
+  }
+
+  function checkUserExistence(authData){
+    return DB().child('users').child(authData.uid).once('value', function(snapshot){
+      var exists = (snapshot.val() !== null);
+      if (!exists) {
+        createUser(authData);
+      }
+    })
+  }
+
+  function createUser(authData){
+    DB().child("users").child(authData.uid).set({
+      provider: authData.provider,
+      name: getName(authData),
+      email: getEmail(authData)
+    });
+  }
+
+  function getName(authData) {
+    switch(authData.provider) {
+     case 'facebook':
+       return authData.facebook.displayName;
+    }
+  }
+
+  function getEmail(authData) {
+    switch(authData.provider) {
+     case 'facebook':
+       return authData.facebook.email;
+    }
   }
 
   function logout(){
@@ -29,7 +59,8 @@ module.exports = function(Auth){
 
   Auth.$onAuth(function(authData){
     if (authData) {
-      console.log("User " + authData.uid + " is logged in with " + authData.provider);
+      console.log("authData: ", authData);
+      checkUserExistence(authData);
     } else {
       console.log("User is logged out");
     }

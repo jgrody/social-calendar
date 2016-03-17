@@ -7,7 +7,7 @@ module.exports = angular.module('app.home', [
 
     $scope.search = function(){
       $scope.fetching = facebookService.getEvents({
-        location: $scope.options.search
+        query: $scope.options.search
       })
       .then(function(data){
         $scope.events = data.data;

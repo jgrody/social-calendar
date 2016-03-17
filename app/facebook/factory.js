@@ -40,7 +40,7 @@ module.exports = function($q, authFactory, ezfb){
   return {
     getEvents: function(params) {
       return request('/search?', {
-        q: params.location,
+        q: params.query,
         type: 'event'
       }, function(res){
         console.log("res: ", res);

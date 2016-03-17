@@ -1,28 +1,24 @@
 <div layout="row"
-     layout-align="space-between center">
-  <md-input-container class="md-block" flex>
-    <label>City</label>
-    <input required
-           name="city"
+     layout-align="center none">
+  <md-input-container
+      class="md-block push-top-xl"
+      flex="90">
+
+    <label>Search for an event near you</label>
+    <input name="query"
            ng-model="options.search"
            ng-change="search()"
            ng-model-options="{debounce: 400}" />
   </md-input-container>
 </div>
 
-<div layout="column"
-     layout-sm="column"
-     layout-align="space-around center">
-  <md-progress-circular
-      class="md-accent"
-      md-diameter="90"
-      md-mode="indeterminate"
-      ng-show="fetching">
-  </md-progress-circular>
-</div>
+<div show-progress="fetching"></div>
 
 <div layout="row">
-  <md-list class="md-dense" flex>
+  <md-list
+      class="md-dense"
+      flex
+      ng-if="events.length">
     <md-list-item
         class="md-3-line md-long-text"
         ng-repeat="event in events">
@@ -34,4 +30,10 @@
       </div>
     </md-list-item>
   </md-list>
+
+  <md-content
+      flex
+      ng-if="events && !events.length">
+    <p> Sorry! No results match your search. </p>
+  </md-content>
 </div>
