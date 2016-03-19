@@ -19,12 +19,17 @@ gulp.task('connect', function() {
   })
 })
 
-gulp.task('vendor', function() {
-    return browserify('./app/vendor.js')
-    .bundle()
-    .pipe(source('vendor.js'))
-    .pipe(gulp.dest('./public/js/'));
-  })
+gulp.task('bootstrap', function(){
+  return gulp.src('node_modules/bootstrap/dist/css/bootstrap.css')
+    .pipe(rename('bootstrap.scss'))
+    .pipe(gulp.dest('sass'))
+})
+
+gulp.task('calendar', function(){
+  return gulp.src('node_modules/angular-bootstrap-calendar/dist/css/angular-bootstrap-calendar.min.css')
+    .pipe(rename('angular-bootstrap-calendar.scss'))
+    .pipe(gulp.dest('sass'))
+})
 
 gulp.task('browserify', function() {
       // Grabs the app.js file
@@ -55,4 +60,4 @@ gulp.task('watch', function() {
   gulp.watch('sass/style.sass', ['sass']);
 })
 
-gulp.task('default', ['connect', 'copy', 'vendor', 'watch'])
+gulp.task('default', ['connect', 'copy', 'bootstrap', 'calendar', 'watch'])

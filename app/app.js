@@ -34,10 +34,7 @@ angular.module('app', [
 
     Auth.$onAuth(function(user) {
       $rootScope.user = user;
-
-      if (user){
-        $location.path("/home")
-      } else {
+      if (!user){
         $location.path("/login")
       }
     });

@@ -1,19 +1,22 @@
-<p>calendar</p>
-<!-- <calendar-md flex layout layout-fill
-  calendar-direction="direction"
-  on-prev-month="prevMonth"
-  on-next-month="nextMonth"
-  on-day-click="dayClick"
-  title-format="'MMMM y'"
-  ng-model='selectedDate'
-  week-starts-on="firstDayOfWeek"
-  data-start-month="8"
-  data-start-year="2014"
-  tooltips="tooltips"
-  day-format="dayFormat"
-  day-label-format="'EEE'"
-  day-label-tooltip-format="'EEEE'"
-  day-tooltip-format="'fullDate'"
-  day-content="setDayContent"
-  disable-future-selection="false"
-</calendar-md> -->
+<div flex>
+  <div layout="row" layout-align="end center" layout-padding>
+    <md-button class="md-primary push-none" ng-click="toggleView('year')">Year</md-button>
+    <md-button class="md-primary push-none" ng-click="toggleView('month')">Month</md-button>
+    <md-button class="md-primary push-none" ng-click="toggleView('week')">Week</md-button>
+    <md-button class="md-primary push-none" ng-click="toggleView('day')">Day</md-button>
+  </div>
+
+  <mwl-calendar
+      view="calendarView"
+      view-date="calendarDate"
+      events="events"
+      view-title="calendarTitle"
+      on-event-click="eventClicked(calendarEvent)"
+      on-event-times-changed="calendarEvent.startsAt = calendarNewEventStart; calendarEvent.endsAt = calendarNewEventEnd"
+      edit-event-html="'<i class=\'glyphicon glyphicon-pencil\'></i>'"
+      delete-event-html="'<i class=\'glyphicon glyphicon-remove\'></i>'"
+      on-edit-event-click="eventEdited(calendarEvent)"
+      on-delete-event-click="eventDeleted(calendarEvent)"
+      cell-is-open="true">
+      </mwl-calendar>   
+</div>
