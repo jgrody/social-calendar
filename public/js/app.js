@@ -142,13 +142,14 @@ module.exports = angular.module('app.calendar', [
     window.scope = $scope;
     $scope.calendarView = 'month';
     $scope.calendarDate = new Date();
-    $scope.calendarTitle = 'Title, son!';
+    // $scope.calendarTitle = 'Title, son!';
 
     $scope.toggleView = function(type){
       $scope.calendarView = type;
     }
 
-    // console.log("user: ", user);
+    $scope.calendarViewOptions = ['year', 'month', 'week', 'day'];
+
   }])
   .config(["$routeProvider", function($routeProvider){
     $routeProvider.when('/calendar', {

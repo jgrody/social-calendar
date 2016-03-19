@@ -1,10 +1,47 @@
-<div flex>
-  <div layout="row" layout-align="end center" layout-padding>
-    <md-button class="md-primary push-none" ng-click="toggleView('year')">Year</md-button>
-    <md-button class="md-primary push-none" ng-click="toggleView('month')">Month</md-button>
-    <md-button class="md-primary push-none" ng-click="toggleView('week')">Week</md-button>
-    <md-button class="md-primary push-none" ng-click="toggleView('day')">Day</md-button>
+<div layout="row"
+     layout-fill
+     layout-align="center center">
+  <h2>{{calendarTitle}}</h2>
+</div>
+
+<div layout="row" layout-padding class="push-bottom-xxs">
+  <div class="text-left"
+       layout-align="start start"
+       flex>
+    <md-button
+        class="push-none md-primary"
+        mwl-date-modifier
+        date="calendarDate"
+        decrement="calendarView">
+      Previous
+    </md-button>
+    <md-button
+        class="push-none md-primary"
+        mwl-date-modifier
+        date="calendarDate"
+        set-to-today>
+      Today
+    </md-button>
+    <md-button
+        class="push-none md-primary"
+        mwl-date-modifier
+        date="calendarDate"
+        increment="calendarView">
+      Next
+    </md-button>
   </div>
+  <div class="text-right"
+       layout-align="end start"
+       flex>
+    <md-button
+        ng-repeat="option in calendarViewOptions"
+        ng-class="{'md-primary': calendarView == option}"
+        class="push-none pad-none"
+        ng-click="toggleView(option)">{{option}}
+    </md-button>
+  </div>
+</div>
+    
 
   <mwl-calendar
       view="calendarView"
@@ -18,5 +55,4 @@
       on-edit-event-click="eventEdited(calendarEvent)"
       on-delete-event-click="eventDeleted(calendarEvent)"
       cell-is-open="true">
-      </mwl-calendar>   
-</div>
+  </mwl-calendar>   

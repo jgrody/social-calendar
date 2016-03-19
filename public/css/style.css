@@ -19694,6 +19694,19 @@ md-tooltip {
 @media print {
   .hide-print:not(.show-print):not(.show) {
     display: none !important; } }
+.spinner-visible .maskable > *:not(.spinner-unmask) {
+  visibility: hidden !important; }
+
+.spinner-placeholder {
+  width: 50px;
+  height: 50px; }
+
+.spnnr, .spnnr-large {
+  margin: 1.5em auto;
+  left: 50% !important;
+  width: 100%;
+  min-height: 4em; }
+
 .push-xxl {
   margin: 55px !important; }
 
@@ -19934,18 +19947,14 @@ md-tooltip {
 .pad-top-none {
   padding-top: 0 !important; }
 
-.spinner-visible .maskable > *:not(.spinner-unmask) {
-  visibility: hidden !important; }
+.text-right {
+  text-align: right !important; }
 
-.spinner-placeholder {
-  width: 50px;
-  height: 50px; }
+.text-left {
+  text-align: left !important; }
 
-.spnnr, .spnnr-large {
-  margin: 1.5em auto;
-  left: 50% !important;
-  width: 100%;
-  min-height: 4em; }
+.text-center {
+  text-align: center !important; }
 
 /*!
  * Bootstrap v3.3.6 (http://getbootstrap.com)
