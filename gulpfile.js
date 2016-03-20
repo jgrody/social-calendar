@@ -6,6 +6,7 @@ var source = require('vinyl-source-stream')
 var ngAnnotate = require('gulp-ng-annotate');
 var rename = require("gulp-rename");
 var streamify = require('gulp-streamify');
+var cachebust = require('gulp-cache-bust');
 
 // configure paths for browserify
 var cwd = process.cwd();
@@ -17,6 +18,12 @@ gulp.task('connect', function() {
     root: ['public'],
     port: 4000
   })
+})
+
+gulp.task('cachebust', function(){
+  gulp.src('./public/**/*.html')
+  .pipe(cachebust({type: 'timestamp'}))
+  .pipe(gulp.dest('./public'));
 })
 
 gulp.task('bootstrap', function(){
@@ -54,10 +61,17 @@ gulp.task('copy', function(){
 })
 
 gulp.task('watch', function() {
-  gulp.watch('app/**/*.js', ['browserify', 'copy']);
-  gulp.watch('modules/**/*.js', ['browserify', 'copy']);
-  gulp.watch('app/**/*.html', ['copy']);
+  gulp.watch('app/**/*.js', ['browserify', 'copy', 'cachebust']);
+  gulp.watch('modules/**/*.js', ['browserify', 'copy', 'cachebust']);
+  gulp.watch('app/**/*.html', ['copy', 'cachebust']);
   gulp.watch('sass/style.sass', ['sass']);
 })
 
-gulp.task('default', ['connect', 'copy', 'bootstrap', 'calendar', 'watch'])
+gulp.task('default', [
+  'connect',
+  'copy',
+  'cachebust',
+  'bootstrap',
+  'calendar',
+  'watch'
+])

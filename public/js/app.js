@@ -121,6 +121,7 @@ module.exports = ["$firebaseAuth", "FBURL", function($firebaseAuth, FBURL){
 },{}],5:[function(require,module,exports){
 require('angular-ui-bootstrap');
 require('angular-bootstrap-calendar');
+// require('moment/src/moment');
 
 module.exports = angular.module('app.calendar', [
   'ui.bootstrap',
@@ -178,6 +179,11 @@ module.exports = ["$rootScope", "Auth", "$location", function($rootScope, Auth, 
     if (!user){
       $location.path('/login');
     }
+
+    if (user && $location.$$path == '/login') {
+      $location.path('/home');
+    }
+
   });
 }]
 },{}],8:[function(require,module,exports){
@@ -319,20 +325,12 @@ module.exports = angular.module('app.login', [
       controller: 'LoginController'
     });
   }])
-  .run(["Auth", "$location", function(Auth, $location){
-    Auth.$onAuth(function(user) {
-      if (user){
-        $location.path('/home');
-      }
-    });
-  }])
 
 
 },{"modules/sanitized":20}],14:[function(require,module,exports){
 module.exports = angular.module('app.schedule', [
 ])
   .controller('ScheduleController', ["$scope", "user", function($scope, user){
-    console.log("user: ", user);
   }])
   .config(["$routeProvider", function($routeProvider){
     $routeProvider.when('/schedule', {
