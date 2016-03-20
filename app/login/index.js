@@ -9,11 +9,4 @@ module.exports = angular.module('app.login', [
       controller: 'LoginController'
     });
   })
-  .run(function(Auth, $location){
-    Auth.$onAuth(function(user) {
-      if (user){
-        $location.path('/home');
-      }
-    });
-  })
 
