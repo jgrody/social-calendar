@@ -6,11 +6,14 @@ module.exports = angular.module('app.login', [
   .config(function($routeProvider){
     $routeProvider.when('/login', {
       templateUrl: 'login/template.html',
-      controller: 'LoginController',
-      // resolve: {
-      //   user: ['Auth', function (Auth) {
-      //     return Auth.$waitForAuth();
-      //   }]
-      // }
+      controller: 'LoginController'
     });
   })
+  .run(function(Auth, $location){
+    Auth.$onAuth(function(user) {
+      if (user){
+        $location.path('/home');
+      }
+    });
+  })
+

@@ -17,31 +17,19 @@ angular.module('app', [
   require('schedule').name,
   require('login').name,
 ])
-  .config(["$routeProvider", "$locationProvider", function ($routeProvider, $locationProvider) {
-    $routeProvider.otherwise({
-      redirectTo: '/home'
-    });
-  }])
-  .run(["$rootScope", "Auth", "ezfb", "$location", function($rootScope, Auth, ezfb, $location) {
-    window.rootScope = $rootScope;
-
-    ezfb.init({
-      appId: '1274974405853101',
-      // status: true,
-      // cookie: true,
-      xfbml: true,
-      version: 'v2.5'
-    }); 
-
-    Auth.$onAuth(function(user) {
-      $rootScope.user = user;
-      if (!user){
-        $location.path("/login")
+  .run(require('ezfb'))
+  .run(require('current_user'))
+  .run(["$rootScope", "Auth", "$location", function($rootScope, Auth, $location) {
+    $rootScope.$on("$routeChangeError", function(event, next, previous, error) {
+      // We can catch the error thrown when the $requireAuth promise is rejected
+      // and redirect the user back to the home page
+      if (error === "AUTH_REQUIRED") {
+        $location.path("/login");
       }
     });
   }]);
 
-},{"auth":3,"calendar":5,"config":6,"facebook":8,"home":9,"layout":10,"login":11,"modules/filters":14,"modules/progress":15,"schedule":12}],2:[function(require,module,exports){
+},{"auth":3,"calendar":5,"config":6,"current_user":7,"ezfb":8,"facebook":10,"home":11,"layout":12,"login":13,"modules/filters":16,"modules/progress":17,"schedule":14}],2:[function(require,module,exports){
 module.exports = ["Auth", "DB", function(Auth, DB){
   "ngInject";
 
@@ -139,16 +127,14 @@ module.exports = angular.module('app.calendar', [
   'mwl.calendar'
 ])
   .controller('CalendarController', ["$scope", "user", function($scope, user){
-    window.scope = $scope;
     $scope.calendarView = 'month';
     $scope.calendarDate = new Date();
-    // $scope.calendarTitle = 'Title, son!';
 
     $scope.toggleView = function(type){
       $scope.calendarView = type;
     }
 
-    $scope.calendarViewOptions = ['year', 'month', 'week', 'day'];
+    $scope.calendarViewOptions = ['month', 'day'];
 
   }])
   .config(["$routeProvider", function($routeProvider){
@@ -157,13 +143,13 @@ module.exports = angular.module('app.calendar', [
       controller: 'CalendarController',
       resolve: {
         user: ['Auth', function (Auth) {
-          return Auth.$waitForAuth();
+          return Auth.$requireAuth();
         }]
       }
     });
   }])
 
-},{"angular-bootstrap-calendar":19,"angular-ui-bootstrap":21}],6:[function(require,module,exports){
+},{"angular-bootstrap-calendar":21,"angular-ui-bootstrap":23}],6:[function(require,module,exports){
 'use strict';
 
 // Declare app level module which depends on filters, and services
@@ -183,6 +169,31 @@ module.exports = angular.module('app.config', [])
     return new Firebase(url);
   })
 },{}],7:[function(require,module,exports){
+module.exports = ["$rootScope", "Auth", "$location", function($rootScope, Auth, $location){
+  "ngInject";
+
+  Auth.$onAuth(function(user) {
+    $rootScope.currentUser = user;
+
+    if (!user){
+      $location.path('/login');
+    }
+  });
+}]
+},{}],8:[function(require,module,exports){
+module.exports = ["ezfb", function(ezfb){
+  "ngInject";
+
+
+  ezfb.init({
+    appId: '1274974405853101',
+    // status: true,
+    // cookie: true,
+    xfbml: true,
+    version: 'v2.5'
+  }); 
+}]
+},{}],9:[function(require,module,exports){
 module.exports = ["$q", "authFactory", "ezfb", function($q, authFactory, ezfb){
   "ngInject";
 
@@ -233,12 +244,12 @@ module.exports = ["$q", "authFactory", "ezfb", function($q, authFactory, ezfb){
     }
   }
 }]
-},{}],8:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 module.exports = angular.module('app.facebook', [
 ])
   .factory('facebookService', require('./factory'))
 
-},{"./factory":7}],9:[function(require,module,exports){
+},{"./factory":9}],11:[function(require,module,exports){
 module.exports = angular.module('app.home', [
   require('modules/sanitized').name
 ])
@@ -264,13 +275,13 @@ module.exports = angular.module('app.home', [
       controller: 'HomeController',
       resolve: {
         user: ['Auth', function (Auth) {
-          return Auth.$waitForAuth();
+          return Auth.$requireAuth();
         }]
       }
     });
   }])
 
-},{"modules/sanitized":18}],10:[function(require,module,exports){
+},{"modules/sanitized":20}],12:[function(require,module,exports){
 module.exports = angular.module('app.layout', [
 ]).controller('LayoutController', ["$scope", "$mdSidenav", "authFactory", "$location", function($scope, $mdSidenav, authFactory, $location){
     $scope.links = [
@@ -296,7 +307,7 @@ module.exports = angular.module('app.layout', [
       authFactory.logout();
     }
 }])
-},{}],11:[function(require,module,exports){
+},{}],13:[function(require,module,exports){
 module.exports = angular.module('app.login', [
   require('modules/sanitized').name
 ])
@@ -305,16 +316,19 @@ module.exports = angular.module('app.login', [
   .config(["$routeProvider", function($routeProvider){
     $routeProvider.when('/login', {
       templateUrl: 'login/template.html',
-      controller: 'LoginController',
-      // resolve: {
-      //   user: ['Auth', function (Auth) {
-      //     return Auth.$waitForAuth();
-      //   }]
-      // }
+      controller: 'LoginController'
+    });
+  }])
+  .run(["Auth", "$location", function(Auth, $location){
+    Auth.$onAuth(function(user) {
+      if (user){
+        $location.path('/home');
+      }
     });
   }])
 
-},{"modules/sanitized":18}],12:[function(require,module,exports){
+
+},{"modules/sanitized":20}],14:[function(require,module,exports){
 module.exports = angular.module('app.schedule', [
 ])
   .controller('ScheduleController', ["$scope", "user", function($scope, user){
@@ -326,13 +340,13 @@ module.exports = angular.module('app.schedule', [
       controller: 'ScheduleController',
       resolve: {
         user: ['Auth', function (Auth) {
-          return Auth.$waitForAuth();
+          return Auth.$requireAuth();
         }]
       }
     });
   }])
 
-},{}],13:[function(require,module,exports){
+},{}],15:[function(require,module,exports){
 module.exports = ["$filter", function($filter){
   "ngInject";
   return function(date, format) {
@@ -343,12 +357,12 @@ module.exports = ["$filter", function($filter){
     }
   };
 }]
-},{}],14:[function(require,module,exports){
+},{}],16:[function(require,module,exports){
 module.exports = angular.module('modules.filters', [
   'ngSanitize'
 ])
   .filter('dateFilter', require('./date'))
-},{"./date":13}],15:[function(require,module,exports){
+},{"./date":15}],17:[function(require,module,exports){
 module.exports = angular.module('modules.progress', [
   'ngMaterial'
 ])
@@ -359,7 +373,7 @@ module.exports = angular.module('modules.progress', [
     }
   })
 
-},{}],16:[function(require,module,exports){
+},{}],18:[function(require,module,exports){
 module.exports = ["$scope", "$sce", function($scope, $sce){
   "ngInject";
 
@@ -372,7 +386,7 @@ module.exports = ["$scope", "$sce", function($scope, $sce){
   });
 }]
 
-},{}],17:[function(require,module,exports){
+},{}],19:[function(require,module,exports){
 module.exports = function() {
   "ngInject";
 
@@ -382,14 +396,14 @@ module.exports = function() {
     controller: 'SanitizedController'
   }
 }
-},{}],18:[function(require,module,exports){
+},{}],20:[function(require,module,exports){
 module.exports = angular.module('modules.sanitize', [
   'ngSanitize'
 ])
   .directive("sanitized", require('./directive'))
   .controller("SanitizedController", require('./controller'))
 
-},{"./controller":16,"./directive":17}],19:[function(require,module,exports){
+},{"./controller":18,"./directive":19}],21:[function(require,module,exports){
 /**
  * angular-bootstrap-calendar - A pure AngularJS bootstrap themed responsive calendar that can display events and has views for year, month, week and day
  * @version v0.19.3
@@ -2532,7 +2546,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/ ])
 });
 ;
-},{"angular":23,"interact.js":24,"moment":25}],20:[function(require,module,exports){
+},{"angular":25,"interact.js":26,"moment":27}],22:[function(require,module,exports){
 /*
  * angular-ui-bootstrap
  * http://angular-ui.github.io/bootstrap/
@@ -9907,12 +9921,12 @@ angular.module('ui.bootstrap.datepicker').run(function() {!angular.$$csp().noInl
 angular.module('ui.bootstrap.tooltip').run(function() {!angular.$$csp().noInlineStyle && !angular.$$uibTooltipCss && angular.element(document).find('head').prepend('<style type="text/css">[uib-tooltip-popup].tooltip.top-left > .tooltip-arrow,[uib-tooltip-popup].tooltip.top-right > .tooltip-arrow,[uib-tooltip-popup].tooltip.bottom-left > .tooltip-arrow,[uib-tooltip-popup].tooltip.bottom-right > .tooltip-arrow,[uib-tooltip-popup].tooltip.left-top > .tooltip-arrow,[uib-tooltip-popup].tooltip.left-bottom > .tooltip-arrow,[uib-tooltip-popup].tooltip.right-top > .tooltip-arrow,[uib-tooltip-popup].tooltip.right-bottom > .tooltip-arrow,[uib-popover-popup].popover.top-left > .arrow,[uib-popover-popup].popover.top-right > .arrow,[uib-popover-popup].popover.bottom-left > .arrow,[uib-popover-popup].popover.bottom-right > .arrow,[uib-popover-popup].popover.left-top > .arrow,[uib-popover-popup].popover.left-bottom > .arrow,[uib-popover-popup].popover.right-top > .arrow,[uib-popover-popup].popover.right-bottom > .arrow{top:auto;bottom:auto;left:auto;right:auto;margin:0;}[uib-popover-popup].popover,[uib-popover-template-popup].popover{display:block !important;}</style>'); angular.$$uibTooltipCss = true; });
 angular.module('ui.bootstrap.timepicker').run(function() {!angular.$$csp().noInlineStyle && !angular.$$uibTimepickerCss && angular.element(document).find('head').prepend('<style type="text/css">.uib-time input{width:50px;}</style>'); angular.$$uibTimepickerCss = true; });
 angular.module('ui.bootstrap.typeahead').run(function() {!angular.$$csp().noInlineStyle && !angular.$$uibTypeaheadCss && angular.element(document).find('head').prepend('<style type="text/css">[uib-typeahead-popup].dropdown-menu{display:block;}</style>'); angular.$$uibTypeaheadCss = true; });
-},{}],21:[function(require,module,exports){
+},{}],23:[function(require,module,exports){
 require('./dist/ui-bootstrap-tpls');
 
 module.exports = 'ui.bootstrap';
 
-},{"./dist/ui-bootstrap-tpls":20}],22:[function(require,module,exports){
+},{"./dist/ui-bootstrap-tpls":22}],24:[function(require,module,exports){
 /**
  * @license AngularJS v1.5.0
  * (c) 2010-2016 Google, Inc. http://angularjs.org
@@ -40341,11 +40355,11 @@ $provide.value("$locale", {
 })(window, document);
 
 !window.angular.$$csp().noInlineStyle && window.angular.element(document.head).prepend('<style type="text/css">@charset "UTF-8";[ng\\:cloak],[ng-cloak],[data-ng-cloak],[x-ng-cloak],.ng-cloak,.x-ng-cloak,.ng-hide:not(.ng-hide-animate){display:none !important;}ng\\:form{display:block;}.ng-animate-shim{visibility:hidden;}.ng-anchor{position:absolute;}</style>');
-},{}],23:[function(require,module,exports){
+},{}],25:[function(require,module,exports){
 require('./angular');
 module.exports = angular;
 
-},{"./angular":22}],24:[function(require,module,exports){
+},{"./angular":24}],26:[function(require,module,exports){
 /**
  * interact.js v1.2.6
  *
@@ -46323,7 +46337,7 @@ module.exports = angular;
 
 } (typeof window === 'undefined'? undefined : window));
 
-},{}],25:[function(require,module,exports){
+},{}],27:[function(require,module,exports){
 //! moment.js
 //! version : 2.12.0
 //! authors : Tim Wood, Iskren Chernev, Moment.js contributors

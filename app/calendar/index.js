@@ -6,16 +6,14 @@ module.exports = angular.module('app.calendar', [
   'mwl.calendar'
 ])
   .controller('CalendarController', function($scope, user){
-    window.scope = $scope;
     $scope.calendarView = 'month';
     $scope.calendarDate = new Date();
-    // $scope.calendarTitle = 'Title, son!';
 
     $scope.toggleView = function(type){
       $scope.calendarView = type;
     }
 
-    $scope.calendarViewOptions = ['year', 'month', 'week', 'day'];
+    $scope.calendarViewOptions = ['month', 'day'];
 
   })
   .config(function($routeProvider){
@@ -24,7 +22,7 @@ module.exports = angular.module('app.calendar', [
       controller: 'CalendarController',
       resolve: {
         user: ['Auth', function (Auth) {
-          return Auth.$waitForAuth();
+          return Auth.$requireAuth();
         }]
       }
     });

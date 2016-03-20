@@ -9,7 +9,7 @@ module.exports = angular.module('app.schedule', [
       controller: 'ScheduleController',
       resolve: {
         user: ['Auth', function (Auth) {
-          return Auth.$waitForAuth();
+          return Auth.$requireAuth();
         }]
       }
     });

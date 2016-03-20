@@ -16,26 +16,14 @@ angular.module('app', [
   require('schedule').name,
   require('login').name,
 ])
-  .config(function ($routeProvider, $locationProvider) {
-    $routeProvider.otherwise({
-      redirectTo: '/home'
-    });
-  })
-  .run(function($rootScope, Auth, ezfb, $location) {
-    window.rootScope = $rootScope;
-
-    ezfb.init({
-      appId: '1274974405853101',
-      // status: true,
-      // cookie: true,
-      xfbml: true,
-      version: 'v2.5'
-    }); 
-
-    Auth.$onAuth(function(user) {
-      $rootScope.user = user;
-      if (!user){
-        $location.path("/login")
+  .run(require('ezfb'))
+  .run(require('current_user'))
+  .run(function($rootScope, Auth, $location) {
+    $rootScope.$on("$routeChangeError", function(event, next, previous, error) {
+      // We can catch the error thrown when the $requireAuth promise is rejected
+      // and redirect the user back to the home page
+      if (error === "AUTH_REQUIRED") {
+        $location.path("/login");
       }
     });
   });

@@ -55,14 +55,14 @@
           <md-button
               class="pull-right"
               ng-click="login()"
-              ng-if="!user">
+              ng-if="!currentUser">
             Login
           </md-button>
 
           <md-button
               class="pull-right"
               ng-click="logout()"
-              ng-if="user">
+              ng-if="currentUser">
             Logout
           </md-button>
         </div>

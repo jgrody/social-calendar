@@ -23,7 +23,7 @@ module.exports = angular.module('app.home', [
       controller: 'HomeController',
       resolve: {
         user: ['Auth', function (Auth) {
-          return Auth.$waitForAuth();
+          return Auth.$requireAuth();
         }]
       }
     });
