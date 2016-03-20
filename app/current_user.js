@@ -7,5 +7,10 @@ module.exports = function($rootScope, Auth, $location){
     if (!user){
       $location.path('/login');
     }
+
+    if (user && $location.$$path == '/login') {
+      $location.path('/home');
+    }
+
   });
 }
