@@ -1,39 +1,44 @@
-<div layout="row"
-     layout-align="center none">
-  <md-input-container
-      class="md-block push-top-xl"
-      flex="90">
+<section id="home">
+  <div layout="row"
+       layout-align="center none">
+    <md-input-container
+        class="md-block push-top-xl"
+        flex="90">
 
-    <label>Search for an event near you</label>
-    <input name="query"
-           ng-model="options.search"
-           ng-change="search()"
-           ng-model-options="{debounce: 400}" />
-  </md-input-container>
-</div>
+      <label>Search for an event near you</label>
+      <input name="query"
+             ng-model="options.search"
+             ng-change="search()"
+             ng-model-options="{debounce: 400}" />
+    </md-input-container>
+  </div>
 
-<div show-progress="fetching"></div>
+  <div show-progress="fetching"></div>
 
-<div layout="row">
-  <md-list
-      class="md-dense"
-      flex
-      ng-if="events.length">
-    <md-list-item
-        class="md-3-line md-long-text"
-        ng-repeat="event in events">
-      <!-- <img ng-src="{{todos[0].face}}?25" class="md-avatar" alt="{{todos[0].who}}" /> -->
-      <div class="md-list-item-text">
-        <h3> Name: {{event.name}} </h3>
-        <h4> Starts: {{event.start_time | dateFilter}} </h4>
-        <p sanitized="event.description"></p>
-      </div>
-    </md-list-item>
-  </md-list>
+  <div layout="row">
+    <md-list
+        flex
+        ng-if="events.length">
 
-  <md-content
-      flex
-      ng-if="events && !events.length">
-    <p> Sorry! No results match your search. </p>
-  </md-content>
-</div>
+      <md-list-item class="md-3-line md-long-text" ng-repeat="event in events">
+        <div class="md-list-item-text">
+          <h3>{{event.name}} | {{event.start_time | dateFilter}}</h3>
+          <!-- <h4>{{event.start_time | dateFilter}}</h4> -->
+          <p sanitized="event.description | truncate:true:200" flex="75"></p>
+          
+          <md-button
+              class="md-secondary"
+              ng-click="addToCalendar(event)">
+            Add To Calendar
+          </md-button>
+        </div>
+      </md-list-item>
+    </md-list>
+
+    <md-content
+        flex
+        ng-if="events && !events.length">
+      <p> Sorry! No results match your search. </p>
+    </md-content>
+  </div>
+</section>

@@ -61,16 +61,16 @@ gulp.task('copy', function(){
 })
 
 gulp.task('watch', function() {
-  gulp.watch('app/**/*.js', ['browserify', 'copy', 'cachebust']);
-  gulp.watch('modules/**/*.js', ['browserify', 'copy', 'cachebust']);
-  gulp.watch('app/**/*.html', ['copy', 'cachebust']);
-  gulp.watch('sass/style.sass', ['sass']);
+  gulp.watch('app/**/*.js', ['browserify', 'copy']);
+  gulp.watch('modules/**/*.js', ['browserify', 'copy']);
+  gulp.watch('app/**/*.html', ['browserify', 'copy']);
+  gulp.watch('sass/**/*.sass', ['sass']);
 })
 
 gulp.task('default', [
   'connect',
   'copy',
-  'cachebust',
+  // 'cachebust',
   'bootstrap',
   'calendar',
   'watch'

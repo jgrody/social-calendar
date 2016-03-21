@@ -19,7 +19,7 @@ module.exports = function(Auth, DB){
   }
 
   function checkUserExistence(authData){
-    return DB().child('users').child(authData.uid).once('value', function(snapshot){
+    return DB('users').child(authData.uid).once('value', function(snapshot){
       var exists = (snapshot.val() !== null);
       if (!exists) {
         createUser(authData);

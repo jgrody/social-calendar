@@ -15,6 +15,7 @@ angular.module('app', [
   require('calendar').name,
   require('schedule').name,
   require('login').name,
+  require('factories').name
 ])
   .run(require('ezfb'))
   .run(require('current_user'))
