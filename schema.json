@@ -6,6 +6,8 @@
     }
   }
 }
+// See if event belongs to current user
+// /events/owners/facebook:1234
 
 {
   "users": {

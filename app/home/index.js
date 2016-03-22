@@ -1,12 +1,13 @@
 module.exports = angular.module('app.home', [
   require('modules/sanitized').name,
   require('modules/truncate').name,
+  require('factories').name,
 ])
-  .controller('HomeController', function($scope, user, facebookService, DB){
+  .controller('HomeController', function($scope, currentUser, facebookService, DB, EventModel){
+    "ngInject";
+
+    window.scope = $scope;
     $scope.options = {};
-    var baseRef = DB();
-    var eventsRef = DB('events');
-    window.ref = eventsRef;
 
     // Result would look something like:
     // events: {
@@ -14,20 +15,19 @@ module.exports = angular.module('app.home', [
     //     "facebook:1234": true
     //   }
     // }
-    eventsRef.on('child_added', function(snapshot){
-      // Example ref: 12345/owners/facebook:678910
-      // Setting current user to be set as an owner of this event
-      eventsRef.child(snapshot.key() + '/owners/' + user.uid).set(true);
+    var eventsRef = DB('events');
+    eventsRef.on('child_added', setOwner);
 
-      // eventsRef.child(snapshot.key()).
-    })
 
+    // ###################
+    // SCOPE FUNCTIONS
+    // ###################
     $scope.search = function(){
       $scope.fetching = facebookService.getEvents({
         query: $scope.options.search
       })
-      .then(function(data){
-        $scope.events = data.data;
+      .then(function(response){
+        $scope.events = response.data.map(mapEventModels);
       })
       .finally(function(){
         delete $scope.fetching;
@@ -38,21 +38,39 @@ module.exports = angular.module('app.home', [
       saveEvent(event);
     }
 
-    function saveEvent(event){
-      eventsRef.child(event.id).update({
-      // eventsRef.push({
-        title: event.name,
-        description: event.description,
-        startsAt: moment(event.start_time).toDate()
-      });
+    // ###################
+    // ANONYMOUS FUNCTIONS
+    // ###################
+
+    // Example ref: 1234/owners/facebook:5678
+    // Setting currentUser to be set as an owner of this event
+    function setOwner(snapshot){
+      eventsRef.child(snapshot.key() + '/owners/' + currentUser.uid).set(true);
     }
+
+    function saveEvent(event){
+      return eventsRef.child(event.attrs.id).update({
+        title: event.attrs.name,
+        description: event.attrs.description,
+        startsAt: moment(event.attrs.start_time).toDate()
+      }).then(function(){
+        // Flip switch to show view link
+        event.belongsToCurrentUser = true;
+        $scope.$apply();
+      })
+    }
+
+    function mapEventModels(event){
+      return new EventModel(event);
+    }
+
   })
   .config(function($routeProvider){
     $routeProvider.when('/home', {
       templateUrl: 'home/template.html',
       controller: 'HomeController',
       resolve: {
-        user: ['Auth', function (Auth) {
+        currentUser: ['Auth', function (Auth) {
           return Auth.$requireAuth();
         }]
       }

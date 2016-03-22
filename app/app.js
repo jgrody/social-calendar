@@ -20,6 +20,10 @@ angular.module('app', [
   .run(require('ezfb'))
   .run(require('current_user'))
   .run(function($rootScope, Auth, $location) {
+    $rootScope.goTo = function(path){
+      $location.path(path);
+    }
+
     $rootScope.$on("$routeChangeError", function(event, next, previous, error) {
       // We can catch the error thrown when the $requireAuth promise is rejected
       // and redirect the user back to the home page
@@ -27,4 +31,7 @@ angular.module('app', [
         $location.path("/login");
       }
     });
-  });
+  })
+  .config(function($routeProvider){
+    $routeProvider.otherwise('/home');
+  })
