@@ -13,7 +13,6 @@ angular.module('app', [
   require('facebook').name,
   require('home').name,
   require('calendar').name,
-  require('schedule').name,
   require('login').name,
   require('factories').name
 ])

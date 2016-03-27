@@ -3,8 +3,7 @@ module.exports = angular.module('app.layout', [
 .controller('LayoutController', function($scope, $mdSidenav, authFactory, $location){
   $scope.links = [
     {title: 'Home', path: '/home', icon: 'home'},
-    {title: 'Calendar', path: '/calendar', icon: 'event'},
-    {title: 'Schedule', path: '/schedule'}
+    {title: 'Calendar', path: '/calendar', icon: 'event'}
   ]
 
   $scope.toggleSidenav = function(menuId) {
