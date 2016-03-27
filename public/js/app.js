@@ -78,14 +78,14 @@ module.exports = ["Auth", "DB", function(Auth, DB){
   function getName(authData) {
     switch(authData.provider) {
      case 'facebook':
-       return authData.facebook.displayName;
+       return authData.facebook.displayName || "";
     }
   }
 
   function getEmail(authData) {
     switch(authData.provider) {
      case 'facebook':
-       return authData.facebook.email;
+       return authData.facebook.email || "";
     }
   }
 
@@ -149,32 +149,6 @@ module.exports = angular.module('app.calendar', [
       $scope.calendarView = type;
     }
 
-    // $scope.events = [
-    //   {
-    //     title: 'An event',
-    //     type: 'warning',
-    //     startsAt: moment().startOf('week').subtract(2, 'days').add(8, 'hours').toDate(),
-    //     endsAt: moment().startOf('week').add(1, 'week').add(9, 'hours').toDate(),
-    //     draggable: true,
-    //     resizable: true
-    //   }, {
-    //     title: '<i class="glyphicon glyphicon-asterisk"></i> <span class="text-primary">Another event</span>, with a <i>html</i> title',
-    //     type: 'info',
-    //     startsAt: moment().subtract(1, 'day').toDate(),
-    //     endsAt: moment().add(5, 'days').toDate(),
-    //     draggable: true,
-    //     resizable: true
-    //   }, {
-    //     title: 'This is a really long event title that occurs on every year',
-    //     type: 'important',
-    //     startsAt: moment().startOf('day').add(7, 'hours').toDate(),
-    //     endsAt: moment().startOf('day').add(19, 'hours').toDate(),
-    //     recursOn: 'year',
-    //     draggable: true,
-    //     resizable: true
-    //   }
-    // ];
-
     $scope.eventClicked = function(event){
       console.log("event: ", event);
     }
@@ -193,8 +167,6 @@ module.exports = angular.module('app.calendar', [
         return e;
       });
     }
-
-
   }])
   .config(["$routeProvider", function($routeProvider){
     $routeProvider.when('/calendar', {
@@ -337,12 +309,76 @@ module.exports = ["Model", "DB", "authFactory", function(Model, DB, authFactory)
 
       Model.prototype.set.call(this, data, options);
 
-      this.ref = DB('events/' + this.attrs.id + '/owners/'+ currentUser.uid);
-      this.ref.once('value', function(snapshot){
-        if (snapshot.val() != null) {
+      this.ref = DB('events');
+      this.ownerIndexRef = this.ref
+        .child(this.attrs.id)
+        .child('owners')
+        .child(currentUser.uid)
+
+      this.userIndexRef = DB('users')
+        .child(currentUser.uid)
+        .child('events')
+        .child(this.attrs.id)
+
+      this.ref.on('child_added', function(eventSnapshot){
+        // Example ref: 1234/owners/facebook:5678
+        // Setting currentUser to be set as an owner of this event
+        self.userIndexRef.once('value', function(indexSnapshot){
+          if (indexSnapshot.exists()) {
+            self.ownerIndexRef.set(true);
+          }
+        })
+      })
+
+      self.ownerIndexRef.on('value', function(snapshot){
+        if (snapshot.exists()) {
           self.belongsToCurrentUser = true;
         }
       })
+    },
+
+    // Result would look something like:
+    // events: {
+    //   "1234": {
+    //     ...
+    //     "owners": {
+    //       "facebook:1234": true
+    //     }
+    //   }
+    // }
+    // users: {
+    //   "facebook:1234": {
+    //     "events": {
+    //       "1234": true
+    //     }
+    //   }
+    // }
+    addToCalendar: function(){
+      var self = this;
+
+      return this.ref.child(this.attrs.id).update({
+        title: this.attrs.name,
+        description: this.attrs.description,
+        startsAt: moment(this.attrs.start_time).toDate()
+      }).then(function(){
+        // Doing this here, rather than on 'child_changed' because it clashes
+        // on remove, when trying to set to null, setOwner reverts it right back to true
+        self.ownerIndexRef.set(true);
+        self.userIndexRef.set(true);
+
+        // Flip switch to show view link
+        self.belongsToCurrentUser = true;
+      })
+    },
+
+    removeFromCalendar: function(){
+      var self = this;
+      
+      return this.ownerIndexRef.set(null)
+        .then(function(){
+          self.userIndexRef.set(null);
+          self.belongsToCurrentUser = false;
+        })
     }
   })
 }]
@@ -359,28 +395,17 @@ module.exports = angular.module('app.home', [
   require('modules/truncate').name,
   require('factories').name,
 ])
-  .controller('HomeController', ["$scope", "currentUser", "facebookService", "DB", "EventModel", function($scope, currentUser, facebookService, DB, EventModel){
+  .controller('HomeController',
+    ["$scope", "currentUser", "facebookService", "DB", "EventModel", "$mdToast", function($scope, currentUser, facebookService, DB, EventModel, $mdToast){
     "ngInject";
 
     window.scope = $scope;
     $scope.options = {};
 
-    // Result would look something like:
-    // events: {
-    //   "owners": {
-    //     "facebook:1234": true
-    //   }
-    // }
-    var eventsRef = DB('events');
-    eventsRef.on('child_added', setOwner);
-
-
-    // ###################
-    // SCOPE FUNCTIONS
-    // ###################
     $scope.search = function(){
       $scope.fetching = facebookService.getEvents({
-        query: $scope.options.search
+        // query: $scope.options.search
+        query: 'hoboken'
       })
       .then(function(response){
         $scope.events = response.data.map(mapEventModels);
@@ -389,31 +414,34 @@ module.exports = angular.module('app.home', [
         delete $scope.fetching;
       })
     }
+    $scope.search();
 
     $scope.addToCalendar = function(event){
-      saveEvent(event);
+      event.addToCalendar()
+        .then(function(){
+          $scope.$apply();
+        })
+        .then(function(){
+           $mdToast.show(
+            $mdToast.simple()
+            .textContent(event.attrs.name + ' has been added to your calendar')
+            .hideDelay(3000)
+            ); 
+        })
     }
 
-    // ###################
-    // ANONYMOUS FUNCTIONS
-    // ###################
-
-    // Example ref: 1234/owners/facebook:5678
-    // Setting currentUser to be set as an owner of this event
-    function setOwner(snapshot){
-      eventsRef.child(snapshot.key() + '/owners/' + currentUser.uid).set(true);
-    }
-
-    function saveEvent(event){
-      return eventsRef.child(event.attrs.id).update({
-        title: event.attrs.name,
-        description: event.attrs.description,
-        startsAt: moment(event.attrs.start_time).toDate()
-      }).then(function(){
-        // Flip switch to show view link
-        event.belongsToCurrentUser = true;
-        $scope.$apply();
-      })
+    $scope.removeFromCalendar = function(event){
+      event.removeFromCalendar(event)
+        .then(function(){
+          $scope.$apply();
+        })
+        .then(function(){
+           $mdToast.show(
+            $mdToast.simple()
+            .textContent(event.attrs.name + ' has been removed from your calendar')
+            .hideDelay(3000)
+            ); 
+        })
     }
 
     function mapEventModels(event){

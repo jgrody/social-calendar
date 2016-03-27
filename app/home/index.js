@@ -3,28 +3,17 @@ module.exports = angular.module('app.home', [
   require('modules/truncate').name,
   require('factories').name,
 ])
-  .controller('HomeController', function($scope, currentUser, facebookService, DB, EventModel){
+  .controller('HomeController',
+    function($scope, currentUser, facebookService, DB, EventModel, $mdToast){
     "ngInject";
 
     window.scope = $scope;
     $scope.options = {};
 
-    // Result would look something like:
-    // events: {
-    //   "owners": {
-    //     "facebook:1234": true
-    //   }
-    // }
-    var eventsRef = DB('events');
-    eventsRef.on('child_added', setOwner);
-
-
-    // ###################
-    // SCOPE FUNCTIONS
-    // ###################
     $scope.search = function(){
       $scope.fetching = facebookService.getEvents({
-        query: $scope.options.search
+        // query: $scope.options.search
+        query: 'hoboken'
       })
       .then(function(response){
         $scope.events = response.data.map(mapEventModels);
@@ -33,31 +22,34 @@ module.exports = angular.module('app.home', [
         delete $scope.fetching;
       })
     }
+    $scope.search();
 
     $scope.addToCalendar = function(event){
-      saveEvent(event);
+      event.addToCalendar()
+        .then(function(){
+          $scope.$apply();
+        })
+        .then(function(){
+           $mdToast.show(
+            $mdToast.simple()
+            .textContent(event.attrs.name + ' has been added to your calendar')
+            .hideDelay(3000)
+            ); 
+        })
     }
 
-    // ###################
-    // ANONYMOUS FUNCTIONS
-    // ###################
-
-    // Example ref: 1234/owners/facebook:5678
-    // Setting currentUser to be set as an owner of this event
-    function setOwner(snapshot){
-      eventsRef.child(snapshot.key() + '/owners/' + currentUser.uid).set(true);
-    }
-
-    function saveEvent(event){
-      return eventsRef.child(event.attrs.id).update({
-        title: event.attrs.name,
-        description: event.attrs.description,
-        startsAt: moment(event.attrs.start_time).toDate()
-      }).then(function(){
-        // Flip switch to show view link
-        event.belongsToCurrentUser = true;
-        $scope.$apply();
-      })
+    $scope.removeFromCalendar = function(event){
+      event.removeFromCalendar(event)
+        .then(function(){
+          $scope.$apply();
+        })
+        .then(function(){
+           $mdToast.show(
+            $mdToast.simple()
+            .textContent(event.attrs.name + ' has been removed from your calendar')
+            .hideDelay(3000)
+            ); 
+        })
     }
 
     function mapEventModels(event){

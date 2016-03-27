@@ -15,31 +15,38 @@
 
   <div show-progress="fetching"></div>
 
-  <div layout="row">
-    <md-list
-        flex
-        ng-if="events.length">
-
+  <div layout="row" layout-padding>
+    <md-list flex ng-if="events.length">
       <md-list-item class="md-3-line md-long-text" ng-repeat="event in events">
         <div class="md-list-item-text">
           <h3> {{event.attrs.name | truncate:true:75}} </h3>
           <h4> {{event.attrs.start_time | dateFilter}} </h4>
           <p sanitized="event.attrs.description | truncate:true:150" flex="75"></p>
           
-          <md-button
-              class="md-secondary"
-              ng-if="!event.belongsToCurrentUser"
-              ng-click="addToCalendar(event)">
-            Add To Calendar
-          </md-button>
+          <div class="md-secondary">
+            <md-button
+                class="md-fab md-primary md-hue-2 md-mini"
+                ng-if="!event.belongsToCurrentUser"
+                ng-click="addToCalendar(event)"
+                aria-label="Add to calendar">
 
-          <md-button
-              class="md-secondary"
-              ng-click="goTo('/calendar')"
-              ng-if="event.belongsToCurrentUser">
-            View
-          </md-button>
+              <md-tooltip>Add To Calendar</md-tooltip>
+              <md-icon>add</md-icon>
+            </md-button>
+
+            <md-button
+                class="md-fab md-hue-2 md-mini"
+                ng-if="event.belongsToCurrentUser"
+                ng-click="removeFromCalendar(event)">
+
+              <md-tooltip>Remove From Calendar</md-tooltip>
+              <md-icon>remove</md-icon>
+            </md-button>
+
+          </div>
         </div>
+
+        <md-divider ng-if="!$last"></md-divider>
       </md-list-item>
     </md-list>
 

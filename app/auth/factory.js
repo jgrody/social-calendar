@@ -38,14 +38,14 @@ module.exports = function(Auth, DB){
   function getName(authData) {
     switch(authData.provider) {
      case 'facebook':
-       return authData.facebook.displayName;
+       return authData.facebook.displayName || "";
     }
   }
 
   function getEmail(authData) {
     switch(authData.provider) {
      case 'facebook':
-       return authData.facebook.email;
+       return authData.facebook.email || "";
     }
   }
 

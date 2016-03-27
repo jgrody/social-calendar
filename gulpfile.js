@@ -7,6 +7,7 @@ var ngAnnotate = require('gulp-ng-annotate');
 var rename = require("gulp-rename");
 var streamify = require('gulp-streamify');
 var cachebust = require('gulp-cache-bust');
+// var livereload = require('gulp-livereload');
 
 // configure paths for browserify
 var cwd = process.cwd();
@@ -44,7 +45,7 @@ gulp.task('browserify', function() {
     .bundle()
     .pipe(source('app.js'))
     .pipe(streamify(ngAnnotate()))
-    .pipe(gulp.dest('./public/js/'));
+    .pipe(gulp.dest('./public/js/'))
   })
 
 gulp.task('sass', function() {
@@ -53,24 +54,31 @@ gulp.task('sass', function() {
   })
   .on('error', sass.logError)
   .pipe(gulp.dest('public/css'))
+  // .pipe(livereload())
 })
 
 gulp.task('copy', function(){
   return gulp.src('./app/**/*.html')
-    .pipe(gulp.dest('./public'));
+    .pipe(gulp.dest('./public'))
+    // .pipe(livereload())
 })
 
 gulp.task('watch', function() {
-  gulp.watch('app/**/*.js', ['browserify', 'copy']);
-  gulp.watch('modules/**/*.js', ['browserify', 'copy']);
-  gulp.watch('app/**/*.html', ['browserify', 'copy']);
+  // livereload.listen();
+  gulp.watch([
+    'app/**/*.js',
+    'app/**/*.html',
+    'modules/**/*.js',
+    'modules/**/*.html'
+  ], ['browserify', 'copy']);
+
   gulp.watch('sass/**/*.sass', ['sass']);
+
 })
 
 gulp.task('default', [
   'connect',
   'copy',
-  // 'cachebust',
   'bootstrap',
   'calendar',
   'watch'
