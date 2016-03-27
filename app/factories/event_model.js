@@ -41,6 +41,15 @@ module.exports = function(Model, DB, authFactory){
       })
     },
 
+    toJson: function(options){
+      options = options || {};
+      console.log("this.attrs: ", this.attrs);
+
+      // this.attrs.startsAt = moment(this.attrs.startsAt).toDate();
+
+      return this.attrs;
+    },
+
     // Result would look something like:
     // events: {
     //   "1234": {

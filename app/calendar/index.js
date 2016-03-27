@@ -4,13 +4,14 @@ window.moment = require('moment/min/moment.min');
 
 module.exports = angular.module('app.calendar', [
   'ui.bootstrap',
-  'mwl.calendar'
+  'mwl.calendar',
+  require('factories').name
 ])
-  .controller('CalendarController', function($scope, user, DB, EventCollection){
+  .controller('CalendarController', function($scope, currentUser, DB, EventCollection){
     window.db = DB;
     window.scope = $scope;
 
-    EventCollection.$loaded().then(mapDates);
+    EventCollection.$loaded().then(mapEvents);
 
     $scope.calendarViewOptions = ['year', 'month', 'week', 'day'];
     $scope.calendarView = 'month';
@@ -32,11 +33,13 @@ module.exports = angular.module('app.calendar', [
       console.log("event: ", event);
     }
 
-    function mapDates(data){
+    function mapEvents(data){
       $scope.events = data.map(function(e){
-        e.startsAt = moment(e.startsAt).toDate();
-        return e;
-      });
+        if (e.owners && e.owners[currentUser.uid]) {
+          e.startsAt = moment(e.startsAt).toDate();
+          return e;
+        }
+      }).compact();
     }
   })
   .config(function($routeProvider){
@@ -44,7 +47,7 @@ module.exports = angular.module('app.calendar', [
       templateUrl: 'calendar/template.html',
       controller: 'CalendarController',
       resolve: {
-        user: ['Auth', function (Auth) {
+        currentUser: ['Auth', function (Auth) {
           return Auth.$requireAuth();
         }]
       }

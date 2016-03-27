@@ -132,13 +132,14 @@ window.moment = require('moment/min/moment.min');
 
 module.exports = angular.module('app.calendar', [
   'ui.bootstrap',
-  'mwl.calendar'
+  'mwl.calendar',
+  require('factories').name
 ])
-  .controller('CalendarController', ["$scope", "user", "DB", "EventCollection", function($scope, user, DB, EventCollection){
+  .controller('CalendarController', ["$scope", "currentUser", "DB", "EventCollection", function($scope, currentUser, DB, EventCollection){
     window.db = DB;
     window.scope = $scope;
 
-    EventCollection.$loaded().then(mapDates);
+    EventCollection.$loaded().then(mapEvents);
 
     $scope.calendarViewOptions = ['year', 'month', 'week', 'day'];
     $scope.calendarView = 'month';
@@ -160,11 +161,13 @@ module.exports = angular.module('app.calendar', [
       console.log("event: ", event);
     }
 
-    function mapDates(data){
+    function mapEvents(data){
       $scope.events = data.map(function(e){
-        e.startsAt = moment(e.startsAt).toDate();
-        return e;
-      });
+        if (e.owners && e.owners[currentUser.uid]) {
+          e.startsAt = moment(e.startsAt).toDate();
+          return e;
+        }
+      }).compact();
     }
   }])
   .config(["$routeProvider", function($routeProvider){
@@ -172,14 +175,14 @@ module.exports = angular.module('app.calendar', [
       templateUrl: 'calendar/template.html',
       controller: 'CalendarController',
       resolve: {
-        user: ['Auth', function (Auth) {
+        currentUser: ['Auth', function (Auth) {
           return Auth.$requireAuth();
         }]
       }
     });
   }])
 
-},{"angular-bootstrap-calendar":28,"angular-ui-bootstrap":30,"moment/min/moment.min":34}],6:[function(require,module,exports){
+},{"angular-bootstrap-calendar":28,"angular-ui-bootstrap":30,"factories":13,"moment/min/moment.min":34}],6:[function(require,module,exports){
 'use strict';
 
 // Declare app level module which depends on filters, and services
@@ -336,6 +339,15 @@ module.exports = ["Model", "DB", "authFactory", function(Model, DB, authFactory)
       })
     },
 
+    toJson: function(options){
+      options = options || {};
+      console.log("this.attrs: ", this.attrs);
+
+      // this.attrs.startsAt = moment(this.attrs.startsAt).toDate();
+
+      return this.attrs;
+    },
+
     // Result would look something like:
     // events: {
     //   "1234": {
@@ -403,8 +415,8 @@ module.exports = angular.module('app.home', [
 
     $scope.search = function(){
       $scope.fetching = facebookService.getEvents({
-        // query: $scope.options.search
-        query: 'hoboken'
+        query: $scope.options.search
+        // query: 'hoboken'
       })
       .then(function(response){
         $scope.events = response.data.map(mapEventModels);
