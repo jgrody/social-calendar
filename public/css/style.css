@@ -19707,6 +19707,24 @@ md-tooltip {
   width: 100%;
   min-height: 4em; }
 
+.display-block {
+  display: block; }
+
+.display-inline {
+  display: inline; }
+
+.display-inline-block {
+  display: inline-block; }
+
+.display-table {
+  display: table; }
+
+.display-table-row {
+  display: table-row; }
+
+.display-table-cell {
+  display: table-cell; }
+
 .push-xxl {
   margin: 55px !important; }
 
@@ -27071,3 +27089,17 @@ a.cal-event-week {
   .cal-year-box [class*=span]:nth-child(1), .cal-year-box [class*=span]:nth-child(2) {
     border-bottom: 1px solid #e1e1e1; } }
 /*# sourceMappingURL=angular-bootstrap-calendar.min.css.map*/
+.cal-slide-box md-list {
+  padding-top: 0; }
+.cal-slide-box md-list-item p {
+  -webkit-user-select: none;
+  /* Chrome all / Safari all */
+  -moz-user-select: none;
+  /* Firefox all */
+  -ms-user-select: none;
+  /* IE 10+ */
+  user-select: none;
+  /* Likely future */ }
+.cal-slide-box .event-action {
+  margin: 0 !important;
+  padding-right: 35px; }

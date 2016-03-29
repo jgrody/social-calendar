@@ -7,6 +7,7 @@ angular.module('app', [
   'ngMaterial',
   require('modules/filters').name,
   require('modules/progress').name,
+  require('modules/dialog').name,
   require('config').name,
   require('layout').name,
   require('auth').name,

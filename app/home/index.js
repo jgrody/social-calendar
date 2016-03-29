@@ -13,7 +13,6 @@ module.exports = angular.module('app.home', [
     $scope.search = function(){
       $scope.fetching = facebookService.getEvents({
         query: $scope.options.search
-        // query: 'hoboken'
       })
       .then(function(response){
         $scope.events = response.data.map(mapEventModels);

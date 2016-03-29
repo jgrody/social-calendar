@@ -5,9 +5,14 @@ window.moment = require('moment/min/moment.min');
 module.exports = angular.module('app.calendar', [
   'ui.bootstrap',
   'mwl.calendar',
-  require('factories').name
+  require('factories').name,
+  require('calendar/events/show').name
 ])
-  .controller('CalendarController', function($scope, currentUser, DB, EventCollection){
+  .controller('CalendarController',
+    function($scope, currentUser, DB, EventCollection, calendarConfig, MyDialog, EventModel){
+
+    calendarConfig.templates.calendarSlideBox = 'calendar/templates/slidebox.html';
+
     window.db = DB;
     window.scope = $scope;
 
@@ -22,11 +27,19 @@ module.exports = angular.module('app.calendar', [
     }
 
     $scope.eventClicked = function(event){
-      console.log("event: ", event);
+      return MyDialog.show({
+        controller: 'CalendarEventsShowModalController',
+        templateUrl: 'calendar/events/show/template.html',
+        parent: angular.element(document.body),
+        locals: {
+          event: event
+        }
+      })
     }
 
     $scope.eventDeleted = function(event){
-      console.log("event: ", event);
+      var event = new EventModel(event);
+      event.removeFromCalendar();
     }
 
     $scope.eventEdited = function(event){
@@ -37,6 +50,7 @@ module.exports = angular.module('app.calendar', [
       $scope.events = data.map(function(e){
         if (e.owners && e.owners[currentUser.uid]) {
           e.startsAt = moment(e.startsAt).toDate();
+          e.endsAt = moment(e.endsAt).toDate();
           return e;
         }
       }).compact();

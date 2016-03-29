@@ -72,7 +72,9 @@ module.exports = function(Model, DB, authFactory){
       return this.ref.child(this.attrs.id).update({
         title: this.attrs.name,
         description: this.attrs.description,
-        startsAt: moment(this.attrs.start_time).toDate()
+        startsAt: moment(this.attrs.start_time).toDate(),
+        endsAt: moment(this.attrs.end_time).toDate(),
+        place: this.attrs.place
       }).then(function(){
         // Doing this here, rather than on 'child_changed' because it clashes
         // on remove, when trying to set to null, setOwner reverts it right back to true

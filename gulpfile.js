@@ -72,7 +72,7 @@ gulp.task('watch', function() {
     'modules/**/*.html'
   ], ['browserify', 'copy']);
 
-  gulp.watch('sass/**/*.sass', ['sass']);
+  gulp.watch(['sass/**/*.sass', 'sass/**/*.scss'], ['sass']);
 
 })
 

@@ -1,0 +1,37 @@
+<div class="cal-slide-box"
+     uib-collapse="vm.isCollapsed"
+     mwl-collapse-fallback="vm.isCollapsed">
+
+  <md-content>
+    <md-list flex>
+      <md-list-item
+          ng-click="vm.onEventClick({calendarEvent: event})"
+          class="event-item secondary-button-padding noright"
+          ng-repeat="event in vm.events | orderBy:'startsAt' track by event.$id"
+          ng-class="event.cssClass"
+          mwl-draggable="event.draggable === true"
+          drop-data="{event: event}">
+        <p>
+          <span ng-bind-html="vm.$sce.trustAsHtml(event.title)"></span>
+          (<span ng-bind="event.startsAt | calendarDate:(isMonthView ? 'time' : 'datetime'):true"></span><span ng-if="vm.calendarConfig.displayEventEndTimes && event.endsAt"> - <span ng-bind="event.endsAt | calendarDate:(isMonthView ? 'time' : 'datetime'):true"></span></span>)
+        </p>
+
+        <!-- <md-icon
+            class="md-secondary event-action delete"
+            aria-label="Remove from calendar"
+            ng-if="event.deletable !== false"
+            ng-click="vm.onDeleteEventClick({calendarEvent: event})">
+          delete
+        </md-icon> -->
+
+        <md-icon
+            class="md-secondary event-action edit"
+            aria-label="Edit event"
+            ng-if="event.editable !== false"
+            ng-click="vm.onEditEventClick({calendarEvent: event})">
+          edit
+        </md-icon>
+      </md-list-item>
+    </md-list>
+  </md-content>
+</div>
