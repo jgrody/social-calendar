@@ -1,4 +1,25 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+var palettes = function($mdThemingProvider){
+  var customBlueMap = $mdThemingProvider
+    .extendPalette('light-blue', {
+      'contrastDefaultColor': 'light',
+      'contrastDarkColors': ['50'],
+      '50': 'ffffff'
+    });
+
+  $mdThemingProvider.definePalette('customBlue', customBlueMap);
+
+  $mdThemingProvider
+  .theme('default')
+    .primaryPalette('customBlue', {
+      'default': '500',
+      'hue-1': '50'
+    }).accentPalette('pink');
+
+  $mdThemingProvider.theme('input', 'default').primaryPalette('grey')
+}
+palettes.$inject = ["$mdThemingProvider"];
+
 angular.module('app', [
   'ng',
   'ngAria',
@@ -36,6 +57,7 @@ angular.module('app', [
   .config(["$routeProvider", function($routeProvider){
     $routeProvider.otherwise('/home');
   }])
+  .config(palettes)
 
 },{"auth":3,"calendar":7,"config":8,"current_user":9,"ezfb":10,"facebook":12,"factories":17,"home":18,"layout":19,"login":20,"modules/dialog":22,"modules/filters":26,"modules/progress":29}],2:[function(require,module,exports){
 module.exports = ["Auth", "DB", function(Auth, DB){
