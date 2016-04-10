@@ -27103,3 +27103,6 @@ a.cal-event-week {
 .cal-slide-box .event-action {
   margin: 0 !important;
   padding-right: 35px; }
+
+[ng\:cloak], [ng-cloak], .ng-cloak {
+  display: none !important; }
