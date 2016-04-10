@@ -27,7 +27,7 @@ module.exports = angular.module('app.home', [
         delete $scope.fetching;
       })
     }
-    $scope.search('hoboken');
+    // $scope.search('hoboken');
 
     $scope.addToCalendar = function(event){
       $timeout(function(){
