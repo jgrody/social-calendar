@@ -41,16 +41,15 @@
     </md-button>
   </div>
 </div>
-    
 
-  <mwl-calendar
-      view="calendarView"
-      view-date="calendarDate"
-      events="events"
-      view-title="calendarTitle"
-      on-event-click="eventClicked(calendarEvent)"
-      on-event-times-changed="calendarEvent.startsAt = calendarNewEventStart; calendarEvent.endsAt = calendarNewEventEnd"
-      on-edit-event-click="eventEdited(calendarEvent)"
-      on-delete-event-click="eventDeleted(calendarEvent)"
-      cell-is-open="true">
-  </mwl-calendar>   
+<mwl-calendar
+    view="calendarView"
+    view-date="calendarDate"
+    events="collection"
+    view-title="calendarTitle"
+    on-event-click="eventClicked(calendarEvent)"
+    on-event-times-changed="calendarEvent.startsAt = calendarNewEventStart; calendarEvent.endsAt = calendarNewEventEnd"
+    on-edit-event-click="eventEdited(calendarEvent)"
+    on-delete-event-click="eventDeleted(calendarEvent)"
+    cell-is-open="true">
+</mwl-calendar>

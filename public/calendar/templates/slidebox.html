@@ -16,13 +16,13 @@
           (<span ng-bind="event.startsAt | calendarDate:(isMonthView ? 'time' : 'datetime'):true"></span><span ng-if="vm.calendarConfig.displayEventEndTimes && event.endsAt"> - <span ng-bind="event.endsAt | calendarDate:(isMonthView ? 'time' : 'datetime'):true"></span></span>)
         </p>
 
-        <!-- <md-icon
+        <md-icon
             class="md-secondary event-action delete"
             aria-label="Remove from calendar"
             ng-if="event.deletable !== false"
             ng-click="vm.onDeleteEventClick({calendarEvent: event})">
           delete
-        </md-icon> -->
+        </md-icon>
 
         <md-icon
             class="md-secondary event-action edit"

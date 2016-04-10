@@ -1,6 +1,5 @@
 require('angular-ui-bootstrap');
 require('angular-bootstrap-calendar');
-window.moment = require('moment/min/moment.min');
 
 module.exports = angular.module('app.calendar', [
   'ui.bootstrap',
@@ -9,18 +8,28 @@ module.exports = angular.module('app.calendar', [
   require('calendar/events/show').name
 ])
   .controller('CalendarController',
-    function($scope, currentUser, DB, EventCollection, calendarConfig, MyDialog, EventModel){
+    function($scope, currentUser, DB, calendarConfig,
+             MyDialog, EventModel, $timeout){
+
+    window.scope = $scope;
 
     calendarConfig.templates.calendarSlideBox = 'calendar/templates/slidebox.html';
 
-    window.db = DB;
-    window.scope = $scope;
-
-    EventCollection.$loaded().then(mapEvents);
-
-    $scope.calendarViewOptions = ['year', 'month', 'week', 'day'];
+    $scope.calendarViewOptions = ['month', 'day'];
     $scope.calendarView = 'month';
     $scope.calendarDate = new Date();
+
+    DB('users', currentUser.uid, 'events').on('value', function(userSnapshot){
+      $scope.collection = [];
+
+      angular.forEach(userSnapshot.val(), function(value, key){
+        DB('events', key).once('value', function(eventSnapshot){
+          new EventModel(eventSnapshot.val().id).then(function(event){
+            $scope.collection.push(event);
+          })
+        })
+      })
+    })
 
     $scope.toggleView = function(type){
       $scope.calendarView = type;
@@ -38,22 +47,11 @@ module.exports = angular.module('app.calendar', [
     }
 
     $scope.eventDeleted = function(event){
-      var event = new EventModel(event);
-      event.removeFromCalendar();
+      event.removeFromCalendar()
     }
 
     $scope.eventEdited = function(event){
       console.log("event: ", event);
-    }
-
-    function mapEvents(data){
-      $scope.events = data.map(function(e){
-        if (e.owners && e.owners[currentUser.uid]) {
-          e.startsAt = moment(e.startsAt).toDate();
-          e.endsAt = moment(e.endsAt).toDate();
-          return e;
-        }
-      }).compact();
     }
   })
   .config(function($routeProvider){

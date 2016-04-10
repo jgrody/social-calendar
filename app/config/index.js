@@ -10,9 +10,11 @@ module.exports = angular.module('app.config', [])
   // your Firebase data URL goes here, no trailing slash
   .constant('FBURL', 'https://resplendent-fire-4818.firebaseio.com')
 
-  .constant('DB', function(path){
+  .constant('DB', function(){
     var base = 'https://resplendent-fire-4818.firebaseio.com';
-    var url = path ? (base + '/' + path) : base;
+    var args = Array.apply(null, arguments);
+
+    var url = args.length ? (base + '/' + args.join('/')) : base;
 
     return new Firebase(url);
   })

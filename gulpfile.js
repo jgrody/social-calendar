@@ -81,5 +81,6 @@ gulp.task('default', [
   'copy',
   'bootstrap',
   'calendar',
+  'browserify',
   'watch'
 ])
