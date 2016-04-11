@@ -12,7 +12,7 @@
           mwl-draggable="event.draggable === true"
           drop-data="{event: event}">
         <p>
-          <span ng-bind-html="vm.$sce.trustAsHtml(event.title)"></span>
+          <span ng-bind-html="vm.$sce.trustAsHtml(event.name)"></span>
           (<span ng-bind="event.startsAt | calendarDate:(isMonthView ? 'time' : 'datetime'):true"></span><span ng-if="vm.calendarConfig.displayEventEndTimes && event.endsAt"> - <span ng-bind="event.endsAt | calendarDate:(isMonthView ? 'time' : 'datetime'):true"></span></span>)
         </p>
 

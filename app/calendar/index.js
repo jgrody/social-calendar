@@ -24,7 +24,7 @@ module.exports = angular.module('app.calendar', [
 
       angular.forEach(userSnapshot.val(), function(value, key){
         DB('events', key).once('value', function(eventSnapshot){
-          new EventModel(eventSnapshot.val().id).then(function(event){
+          new EventModel(eventSnapshot.val().eventId).then(function(event){
             $scope.collection.push(event);
           })
         })

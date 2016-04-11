@@ -43,6 +43,10 @@ gulp.task('browserify', function() {
       // Grabs the app.js file
     return browserify('./app/app.js')
     .bundle()
+    .on('error', function (err) {
+      console.log(err.toString());
+      this.emit("end");
+    })
     .pipe(source('app.js'))
     .pipe(streamify(ngAnnotate()))
     .pipe(gulp.dest('./public/js/'))

@@ -2,7 +2,7 @@
   <form>
     <md-toolbar>
       <div class="md-toolbar-tools">
-        <h2>{{event.title}}</h2>
+        <h2>{{event.name}}</h2>
         <span flex></span>
         <md-button class="md-icon-button" ng-click="close()">
           <md-icon aria-label="Close dialog">close</md-icon>
@@ -20,7 +20,7 @@
         </h4>
         <p ng-if="event.description" sanitized="event.description"></p>
       </div>
-      
+
     </md-dialog-content>
 
     <md-dialog-actions layout="row">

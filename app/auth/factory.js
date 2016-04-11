@@ -59,7 +59,6 @@ module.exports = function(Auth, DB){
 
   Auth.$onAuth(function(authData){
     if (authData) {
-      console.log("authData: ", authData);
       checkUserExistence(authData);
     } else {
       console.log("User is logged out");

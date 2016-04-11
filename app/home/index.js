@@ -8,6 +8,7 @@ module.exports = angular.module('app.home', [
     "ngInject";
 
     window.db = DB;
+    window.scope = $scope;
 
     $scope.options = {};
 
@@ -21,20 +22,36 @@ module.exports = angular.module('app.home', [
         query: query || $scope.options.search
       })
       .then(function(response){
-        $scope.events = response.data.map(mapEventModels);
+        console.log('resp:', response);
+        $scope.events = response.map(mapEventModels);
       })
       .finally(function(){
         delete $scope.fetching;
       })
     }
-    // $scope.search('hoboken');
+    $scope.search();
+
+    navigator.geolocation.getCurrentPosition(
+      function(position) {
+        DB('users', currentUser.uid, 'location').update({
+          latitude: position.coords.latitude,
+          longitude: position.coords.longitude
+        })
+      },
+      function(error){
+        console.log(error.message);
+      }, {
+        enableHighAccuracy: true
+        ,timeout : 5000
+      }
+    );
 
     $scope.addToCalendar = function(event){
       $timeout(function(){
         eventsRepository.addToCalendar(event)
           .then(function(){
-            DB('events', event.id, 'owners', currentUser.uid).set(true);
-            DB('users', currentUser.uid, 'events', event.id).set(true);
+            DB('events', event.eventId, 'owners', currentUser.uid).set(true);
+            DB('users', currentUser.uid, 'events', event.eventId).set(true);
             event.belongsToCurrentUser = true;
           })
           .then(function(){
@@ -64,7 +81,7 @@ module.exports = angular.module('app.home', [
     }
 
     function setOwnership(event){
-      DB('users', currentUser.uid, 'events', event.id)
+      DB('users', currentUser.uid, 'events', event.eventId)
         .once('value', function(userIndexRef){
           if (userIndexRef.exists()) {
             event.belongsToCurrentUser = true;
