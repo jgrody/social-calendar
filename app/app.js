@@ -34,6 +34,7 @@ angular.module('app', [
   require('facebook').name,
   require('home').name,
   require('calendar').name,
+  require('settings').name,
   require('login').name,
   require('factories').name
 ])
@@ -47,12 +48,13 @@ angular.module('app', [
     $rootScope.$on("$routeChangeError", function(event, next, previous, error) {
       // We can catch the error thrown when the $requireAuth promise is rejected
       // and redirect the user back to the home page
+      console.log(error);
       if (error === "AUTH_REQUIRED") {
         $location.path("/login");
       }
     });
   })
+  .config(palettes)
   .config(function($routeProvider){
     $routeProvider.otherwise('/home');
   })
-  .config(palettes)
