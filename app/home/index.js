@@ -3,12 +3,10 @@ module.exports = angular.module('app.home', [
   require('modules/truncate').name,
   require('factories').name,
 ])
-  .controller('HomeController',
-    function($scope, currentUser, facebookService, DB, eventsRepository, $mdToast, $timeout){
+  .controller('HomeController', function($scope, currentUser, facebookService,
+                                         DB, eventsRepository, $mdToast,
+                                         $timeout){
     "ngInject";
-
-    window.db = DB;
-    window.scope = $scope;
 
     $scope.options = {};
 
@@ -19,39 +17,27 @@ module.exports = angular.module('app.home', [
 
     $scope.search = function(query){
       $scope.fetching = facebookService.getEvents({
-        query: query || $scope.options.search
+        query: query || $scope.options.search,
+        location: currentUser.location
       })
       .then(function(response){
-        console.log('resp:', response);
         $scope.events = response.map(mapEventModels);
       })
       .finally(function(){
         delete $scope.fetching;
       })
     }
-    $scope.search();
 
-    navigator.geolocation.getCurrentPosition(
-      function(position) {
-        DB('users', currentUser.uid, 'location').update({
-          latitude: position.coords.latitude,
-          longitude: position.coords.longitude
-        })
-      },
-      function(error){
-        console.log(error.message);
-      }, {
-        enableHighAccuracy: true
-        ,timeout : 5000
-      }
-    );
+    currentUser.$loaded().then(function(){
+      $scope.search();
+    })
 
     $scope.addToCalendar = function(event){
       $timeout(function(){
         eventsRepository.addToCalendar(event)
           .then(function(){
-            DB('events', event.eventId, 'owners', currentUser.uid).set(true);
-            DB('users', currentUser.uid, 'events', event.eventId).set(true);
+            DB('events', event.eventId, 'owners', currentUser.$id).set(true);
+            DB('users', currentUser.$id, 'events', event.eventId).set(true);
             event.belongsToCurrentUser = true;
           })
           .then(function(){
@@ -81,10 +67,12 @@ module.exports = angular.module('app.home', [
     }
 
     function setOwnership(event){
-      DB('users', currentUser.uid, 'events', event.eventId)
+      DB('users', currentUser.$id, 'events', event.eventId)
         .once('value', function(userIndexRef){
           if (userIndexRef.exists()) {
-            event.belongsToCurrentUser = true;
+            $timeout(function () {
+              event.belongsToCurrentUser = true;
+            });
           }
         })
     }
@@ -100,9 +88,10 @@ module.exports = angular.module('app.home', [
       templateUrl: 'home/template.html',
       controller: 'HomeController',
       resolve: {
-        currentUser: ['Auth', function (Auth) {
-          return Auth.$requireAuth();
-        }]
+        currentUser: ['Auth', 'UserModel', function (Auth, UserModel) {
+          var auth = Auth.$getAuth();
+          return Auth.$requireAuth() && new UserModel(auth.uid);
+        }],
       }
     });
   })

@@ -1,8 +1,8 @@
-module.exports = function($rootScope, Auth, $location){
+module.exports = function($rootScope, Auth, $location, DB){
   "ngInject";
 
   Auth.$onAuth(function(user) {
-    $rootScope.currentUser = user;
+    $rootScope.loggedInUser = user;
 
     if (!user){
       $location.path('/login');

@@ -1,4 +1,4 @@
-module.exports = function($q, authFactory, ezfb){
+module.exports = function($q, authFactory, ezfb, DB){
   "ngInject";
 
   var user = authFactory.getUser();
@@ -133,14 +133,16 @@ module.exports = function($q, authFactory, ezfb){
         "events.fields(id,name,cover.fields(id,source),picture.type(large),description,start_time,attending_count,declined_count,maybe_count,noreply_count).since("+currentTimestamp+")"
       ]
 
-      // lat = 40.938915300000005
-      // long -74.1720423
-      var query = params.query || "";
-      var url = "/search?center=40.938915300000005,-74.1720423&limit=1000&fields=id"
-      return request(url, {
-        q: params.query,
+      return request('/search?', {
+        q: params.query || "",
+        center: [
+          params.location.latitude,
+          params.location.longitude
+        ].join(','),
         type: 'place',
-        distance: 50000
+        distance: 2500,
+        limit: 1000,
+        fields: 'id'
       }).then(function(response){
         var ids = [];
         var tempArray = [];
@@ -196,7 +198,10 @@ module.exports = function($q, authFactory, ezfb){
                 eventResultObj.profilePicture = (event.picture ? event.picture.data.url : null);
                 eventResultObj.description = (event.description ? event.description : null);
                 eventResultObj.startsAt = (event.start_time ? event.start_time : null);
-                // eventResultObj.distance = (venue.location ? (haversineDistance([venue.location.latitude, venue.location.longitude], [req.query.lat, req.query.lng], false)*1000).toFixed() : null);
+                eventResultObj.distance = (venue.location ? (haversineDistance([
+                  venue.location.latitude, venue.location.longitude
+                ], [ params.location.latitude, params.location.longitude ], false)*1000).toFixed() : null);
+
                 eventResultObj.timeFromNow = calculateStarttimeDifference(currentTimestamp, event.start_time);
                 eventResultObj.stats = {
                   attendingCount: event.attending_count,

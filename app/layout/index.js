@@ -4,7 +4,7 @@ module.exports = angular.module('app.layout', [
   $scope.links = [
     {title: 'Home', path: '/home', icon: 'home'},
     {title: 'Calendar', path: '/calendar', icon: 'event'},
-    {title: 'Settings', path: '/settings', icon: 'settings'},
+    // {title: 'Settings', path: '/settings', icon: 'settings'},
   ]
 
   $scope.toggleSidenav = function(menuId) {

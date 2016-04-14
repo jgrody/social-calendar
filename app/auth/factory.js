@@ -31,7 +31,10 @@ module.exports = function(Auth, DB){
     DB().child("users").child(authData.uid).set({
       provider: authData.provider,
       name: getName(authData),
-      email: getEmail(authData)
+      email: getEmail(authData),
+      postalCode: null,
+      city: null,
+      state: null
     });
   }
 
