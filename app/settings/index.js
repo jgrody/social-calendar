@@ -1,18 +1,18 @@
 module.exports = angular.module('app.settings', [
-  'firebase'
+  'firebase',
+  require('factories/users').name
 ])
-  .controller('SettingsController', function($scope, currentUser, DB, $firebaseObject){
+  .controller('SettingsController', function($scope, currentUser, DB, UserModel){
+
     "ngInject";
 
-    window.scope = $scope;
-    var ref = DB('users', currentUser.uid);
-    var userObject = $firebaseObject(ref);
+    var user = new UserModel(currentUser.uid);
 
-    $scope.loadingUser = userObject.$loaded().then(function(){
+    $scope.loadingUser = user.$loaded().finally(function(){
       delete $scope.loadingUser;
     })
-    
-    userObject.$bindTo($scope, 'user')
+
+    user.$bindTo($scope, 'user');
 
     $scope.states = ('AL AK AZ AR CA CO CT DE FL GA HI ID IL IN IA KS KY LA ME MD MA MI MN MS ' +
     'MO MT NE NV NH NJ NM NY NC ND OH OK OR PA RI SC SD TN TX UT VT VA WA WV WI ' +
