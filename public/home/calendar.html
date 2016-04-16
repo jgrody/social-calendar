@@ -1,0 +1,39 @@
+<div toolbar-navigation allow-search="true"></div>
+
+<md-content flex md-scroll-y>
+  <div layout="row"
+       layout-align="space-between center">
+    <md-button class="md-primary"
+               mwl-date-modifier
+               date="calendarDate"
+               decrement="calendarView">
+      Prev
+    </md-button>
+
+    <h1 class="md-title push-top-xs">
+      {{calendarTitle}}
+    </h1>
+
+    <md-button class="md-primary"
+               mwl-date-modifier
+               date="calendarDate"
+               increment="calendarView">
+      Next
+    </md-button>
+  </div>
+
+  <div show-progress="options.fetching"></div>
+
+  <mwl-calendar view="calendarView"
+                fetching="options.fetching"
+                has-fetched="options.hasFetched"
+                view-date="calendarDate"
+                events="events"
+                view-title="calendarTitle"
+                on-event-click="eventClicked(calendarEvent)"
+                on-event-times-changed="calendarEvent.startsAt = calendarNewEventStart; calendarEvent.endsAt = calendarNewEventEnd"
+                on-edit-event-click="eventEdited(calendarEvent)"
+                on-delete-event-click="eventDeleted(calendarEvent)"
+                cell-is-open="true">
+  </mwl-calendar>
+</md-content>

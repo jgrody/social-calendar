@@ -1,0 +1,18 @@
+<md-sidenav layout="column"
+            class="md-sidenav-left md-whiteframe-z2"
+            md-component-id="left"
+            md-is-locked-open="$mdMedia('gt-md')"
+            ng-cloak>
+
+  <md-toolbar class="md-tall md-hue-2" ng-cloak>
+    <span flex></span>
+    <div layout="column" class="md-toolbar-tools-bottom inset"></div>
+  </md-toolbar>
+
+  <md-list>
+    <md-list-item ng-click="navigateTo(link, $event)" ng-repeat="link in links">
+      <md-icon>{{link.icon}}</md-icon>
+      <p>{{link.title}}</p>
+    </md-list-item>
+  </md-list>
+</md-sidenav>

@@ -17,7 +17,7 @@
 
   <div layout="row" layout-padding>
     <md-list flex ng-if="events.length">
-      <md-list-item class="md-3-line md-long-text" ng-repeat="event in events">
+      <md-list-item class="md-3-line" ng-repeat="event in events">
         <div class="md-list-item-text">
           <h3>{{event.name | truncate:true:75}}</h3>
           <h4>Where: {{event.venueName}} -- {{event.venueLocation.city}}, {{event.venueLocation.state}}</h4>

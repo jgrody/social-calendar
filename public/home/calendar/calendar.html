@@ -1,0 +1,19 @@
+<div class="cal-context" ng-switch="vm.view" ng-if="vm.templatesLoaded">
+
+  <div class="alert alert-danger" ng-switch-default>The value passed to the view attribute of the calendar is not set</div>
+
+  <div class="alert alert-danger" ng-hide="vm.viewDate">The value passed to view-date attribute of the calendar is not set</div>
+
+  <mwl-calendar-day events="vm.events"
+                    fetching="fetching"
+                    has-fetched="hasFetched"
+                    view-date="vm.viewDate"
+                    on-event-click="vm.onEventClick"
+                    on-event-times-changed="vm.onEventTimesChanged"
+                    on-timespan-click="vm.onTimespanClick"
+                    day-view-start="vm.dayViewStart"
+                    day-view-end="vm.dayViewEnd"
+                    day-view-split="vm.dayViewSplit"
+                    ng-switch-when="day">
+  </mwl-calendar-day>
+</div>

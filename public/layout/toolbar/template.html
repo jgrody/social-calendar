@@ -1,0 +1,56 @@
+<md-toolbar ng-class="{'md-hue-2': options.showSearch}">
+  <div class="md-toolbar-tools">
+    <md-button ng-if="!options.showSearch"
+               class="md-icon-button push-none pad-none"
+               ng-click="toggleSidenav('left')"
+               hide-gt-md
+               aria-label="Menu">
+      <md-icon>menu</md-icon>
+    </md-button>
+    <md-button ng-if="options.showSearch"
+               ng-click="options.showSearch = !options.showSearch"
+               class="md-icon-button push-none pad-none"
+               aria-label="Back">
+      <md-icon>arrow_back</md-icon>
+    </md-button>
+
+    <md-input-container ng-if="options.showSearch"
+                        class="pad-left pad-right-sm"
+                        flex>
+      <label>&nbsp;</label>
+      <input class="push-top-sm"
+             ng-model="options.search"
+             ng-change="search()"
+             ng-model-options="{debounce: 400}"
+             placeholder="Search for events near you"
+             autofocus />
+    </md-input-container>
+
+    <h3 class="push-left" ng-if="!options.showSearch">
+      Social Calendar
+    </h3>
+
+    <span flex ng-if="!options.showSearch"></span>
+
+    <md-button aria-label="Search"
+               class="md-icon-button push-none pad-none"
+               ng-if="options.allowSearch"
+               ng-click="options.showSearch = !options.showSearch">
+      <md-icon>search</md-icon>
+    </md-button>
+    <md-menu>
+      <md-button aria-label="Open Settings"
+                 class="md-icon-button push-none pad-none"
+                 ng-click="$mdOpenMenu($event)">
+        <md-icon md-menu-origin>more_vert</md-icon>
+      </md-button>
+      <md-menu-content width="4">
+        <md-menu-item ng-repeat="link in optionLinks">
+          <md-button ng-click="link.fn()">
+            <span md-menu-align-target>{{link.title}}</span>
+          </md-button>
+        </md-menu-item>
+      </md-menu-content>
+    </md-menu>
+  </div>
+</md-toolbar>
