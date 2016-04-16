@@ -140,7 +140,7 @@ module.exports = function($q, authFactory, ezfb, DB){
           params.location.longitude
         ].join(','),
         type: 'place',
-        distance: 2500,
+        distance: 50000,
         limit: 1000,
         fields: 'id'
       }).then(function(response){

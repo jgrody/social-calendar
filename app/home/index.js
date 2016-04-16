@@ -1,14 +1,24 @@
+require('angular-ui-bootstrap');
+require('angular-bootstrap-calendar');
+window.moment = require('moment/min/moment.min');
+
 module.exports = angular.module('app.home', [
   require('modules/sanitized').name,
   require('modules/truncate').name,
   require('factories').name,
+  'mwl.calendar'
 ])
-  .controller('HomeController', function($scope, currentUser, facebookService,
-                                         DB, eventsRepository, $mdToast,
-                                         $timeout){
+  .controller('HomeController', function($scope, currentUser, facebookService, DB, eventsRepository, $mdToast, $timeout){
+
     "ngInject";
 
+    window.scope = $scope;
     $scope.options = {};
+    $scope.options.hasFetched = false;
+
+    $scope.calendarViewOptions = ['day'];
+    $scope.calendarView = 'day';
+    $scope.calendarDate = new Date();
 
     DB('events').on('child_added', function(snapshot){
       var event = snapshot.val();
@@ -16,15 +26,29 @@ module.exports = angular.module('app.home', [
     })
 
     $scope.search = function(query){
-      $scope.fetching = facebookService.getEvents({
+      $scope.events = [];
+
+      $scope.options.fetching = true;
+
+      facebookService.getEvents({
         query: query || $scope.options.search,
         location: currentUser.location
       })
-      .then(function(response){
-        $scope.events = response.map(mapEventModels);
+      .then(function(events){
+        events.each(function(event){
+          if (event.startsAt) {
+            event.startsAt = moment(event.startsAt).toDate()
+          }
+          if (event.endsAt) {
+            event.endsAt = moment(event.endsAt).toDate()
+          }
+
+          $scope.events.push(event)
+        })
       })
       .finally(function(){
-        delete $scope.fetching;
+        $scope.options.hasFetched = true;
+        delete $scope.options.fetching;
       })
     }
 
@@ -83,9 +107,42 @@ module.exports = angular.module('app.home', [
     }
 
   })
+  .config(function($provide){
+    function attachBindings(directive){
+      directive.$$isolateBindings['fetching'] = {
+        attrName: 'fetching',
+        mode: '=',
+        optional: true
+      };
+
+      directive.$$isolateBindings['hasFetched'] = {
+        attrName: 'hasFetched',
+        mode: '=',
+        optional: true
+      };
+
+      return directive;
+    }
+
+    $provide.decorator('mwlCalendarDirective', function($delegate) {
+        var directive = $delegate[0];
+        directive.templateUrl = 'home/calendar/calendar.html';
+        directive = attachBindings(directive);
+
+        return $delegate;
+    });
+
+    $provide.decorator('mwlCalendarDayDirective', function($delegate) {
+        var directive = $delegate[0];
+        directive.templateUrl = 'home/calendar/day-view.html';
+        directive = attachBindings(directive);
+
+        return $delegate;
+    });
+  })
   .config(function($routeProvider){
     $routeProvider.when('/home', {
-      templateUrl: 'home/template.html',
+      templateUrl: 'home/calendar.html',
       controller: 'HomeController',
       resolve: {
         currentUser: ['Auth', 'UserModel', function (Auth, UserModel) {
