@@ -406,7 +406,7 @@ module.exports = ["$q", "authFactory", "ezfb", "DB", function($q, authFactory, e
           params.location.longitude
         ].join(','),
         type: 'place',
-        distance: 50000,
+        distance: 25000,
         limit: 1000,
         fields: 'id'
       }).then(function(response){
@@ -464,9 +464,11 @@ module.exports = ["$q", "authFactory", "ezfb", "DB", function($q, authFactory, e
                 eventResultObj.profilePicture = (event.picture ? event.picture.data.url : null);
                 eventResultObj.description = (event.description ? event.description : null);
                 eventResultObj.startsAt = (event.start_time ? event.start_time : null);
+
+                // Passing true converts units to miles, pass false for km
                 eventResultObj.distance = (venue.location ? (haversineDistance([
                   venue.location.latitude, venue.location.longitude
-                ], [ params.location.latitude, params.location.longitude ], false)*1000).toFixed() : null);
+                ], [ params.location.latitude, params.location.longitude ], true)*1000).toFixed() : null);
 
                 eventResultObj.timeFromNow = calculateStarttimeDifference(currentTimestamp, event.start_time);
                 eventResultObj.stats = {
@@ -705,9 +707,9 @@ module.exports = angular.module('app.home', [
   require('modules/truncate').name,
   require('factories').name,
   'mwl.calendar'
-])
-  .controller('HomeController', ["$scope", "currentUser", "facebookService", "DB", "eventsRepository", "$mdToast", "$timeout", function($scope, currentUser, facebookService, DB, eventsRepository, $mdToast, $timeout){
-
+]).controller('HomeController', ["$scope", "currentUser", "facebookService", "DB", "eventsRepository", "$mdToast", "$timeout", function($scope, currentUser, facebookService,
+              DB, eventsRepository, $mdToast, $timeout){
+                
     "ngInject";
 
     window.scope = $scope;
@@ -765,7 +767,7 @@ module.exports = angular.module('app.home', [
           .then(function(){
             $mdToast.show(
               $mdToast.simple()
-              .textContent(event.name + ' has been added to your calendar')
+              .textContent('Event added.')
               .hideDelay(3000)
             );
           })
@@ -781,11 +783,18 @@ module.exports = angular.module('app.home', [
           .then(function(){
             $mdToast.show(
               $mdToast.simple()
-              .textContent(event.name + ' has been removed from your calendar')
+              .textContent('Event removed.')
               .hideDelay(3000)
             );
           })
       })
+    }
+    $scope.eventClicked = function(event){
+      if (event.belongsToCurrentUser){
+        $scope.removeFromCalendar(event);
+      } else {
+        $scope.addToCalendar(event);
+      }
     }
 
     function setOwnership(event){
@@ -803,7 +812,6 @@ module.exports = angular.module('app.home', [
       setOwnership(event);
       return event;
     }
-
   }])
   .config(["$provide", function($provide){
     function attachBindings(directive){

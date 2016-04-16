@@ -140,7 +140,7 @@ module.exports = function($q, authFactory, ezfb, DB){
           params.location.longitude
         ].join(','),
         type: 'place',
-        distance: 50000,
+        distance: 25000,
         limit: 1000,
         fields: 'id'
       }).then(function(response){
@@ -198,9 +198,11 @@ module.exports = function($q, authFactory, ezfb, DB){
                 eventResultObj.profilePicture = (event.picture ? event.picture.data.url : null);
                 eventResultObj.description = (event.description ? event.description : null);
                 eventResultObj.startsAt = (event.start_time ? event.start_time : null);
+
+                // Passing true converts units to miles, pass false for km
                 eventResultObj.distance = (venue.location ? (haversineDistance([
                   venue.location.latitude, venue.location.longitude
-                ], [ params.location.latitude, params.location.longitude ], false)*1000).toFixed() : null);
+                ], [ params.location.latitude, params.location.longitude ], true)*1000).toFixed() : null);
 
                 eventResultObj.timeFromNow = calculateStarttimeDifference(currentTimestamp, event.start_time);
                 eventResultObj.stats = {

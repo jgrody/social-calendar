@@ -27089,6 +27089,17 @@ a.cal-event-week {
   .cal-year-box [class*=span]:nth-child(1), .cal-year-box [class*=span]:nth-child(2) {
     border-bottom: 1px solid #e1e1e1; } }
 /*# sourceMappingURL=angular-bootstrap-calendar.min.css.map*/
+.cal-day-box .event-time {
+  line-height: 0; }
+
+.day-toggle-btn {
+  margin: 0;
+  padding: 5px; }
+  .day-toggle-btn .material-icons {
+    font-size: 40px;
+    height: 40px;
+    width: 40px; }
+
 .cal-slide-box md-list {
   padding-top: 0; }
 .cal-slide-box md-list-item p {

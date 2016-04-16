@@ -7,9 +7,9 @@ module.exports = angular.module('app.home', [
   require('modules/truncate').name,
   require('factories').name,
   'mwl.calendar'
-])
-  .controller('HomeController', function($scope, currentUser, facebookService, DB, eventsRepository, $mdToast, $timeout){
-
+]).controller('HomeController', function($scope, currentUser, facebookService,
+              DB, eventsRepository, $mdToast, $timeout){
+                
     "ngInject";
 
     window.scope = $scope;
@@ -67,7 +67,7 @@ module.exports = angular.module('app.home', [
           .then(function(){
             $mdToast.show(
               $mdToast.simple()
-              .textContent(event.name + ' has been added to your calendar')
+              .textContent('Event added.')
               .hideDelay(3000)
             );
           })
@@ -83,11 +83,18 @@ module.exports = angular.module('app.home', [
           .then(function(){
             $mdToast.show(
               $mdToast.simple()
-              .textContent(event.name + ' has been removed from your calendar')
+              .textContent('Event removed.')
               .hideDelay(3000)
             );
           })
       })
+    }
+    $scope.eventClicked = function(event){
+      if (event.belongsToCurrentUser){
+        $scope.removeFromCalendar(event);
+      } else {
+        $scope.addToCalendar(event);
+      }
     }
 
     function setOwnership(event){
@@ -105,7 +112,6 @@ module.exports = angular.module('app.home', [
       setOwnership(event);
       return event;
     }
-
   })
   .config(function($provide){
     function attachBindings(directive){

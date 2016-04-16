@@ -1,18 +1,23 @@
 <div class="cal-day-box">
   <div class="clearfix" ng-style="{height: vm.dayViewHeight + 'px'}">
-    <md-list flex ng-if="vm.view.length">
+    <md-list ng-if="vm.view.length" class="pad-top-none" flex>
       <md-list-item class="md-3-line"
-                    ng-click="null"
+                    ng-click="vm.onEventClick({calendarEvent: event})"
                     ng-repeat="event in vm.view track by event.$id">
 
-        <div flex="15">
-          {{event.startsAt | dateFilter:'timeOnly'}}
+        <div flex="none" layout-padding>
+          <div class="md-body-2 pad-none event-time">
+            {{event.startsAt | dateFilter:'timeOnly'}}
+          </div>
+          <div class="md-caption pad-top-none">
+            {{(event.distance / 1000).ceil(2)}}mi
+          </div>
         </div>
 
-        <div class="md-list-item-text">
-          <h3>{{event.name | truncate:true:75}}</h3>
-          <h4>{{event.venueName}}</h4>
-          <p>{{event.venueLocation.city}}, {{event.venueLocation.state}}</p>
+        <div class="md-list-item-text" flex layout-padding>
+          <h3 class="pad-none">{{event.name | truncate:true:75}}</h3>
+          <h4 class="pad-none">{{event.venueName}}</h4>
+          <p class="pad-none">{{event.venueLocation.city}}, {{event.venueLocation.state}}</p>
 
           <div class="md-secondary">
             <md-button class="md-fab md-primary md-hue-2 md-mini"
