@@ -5,7 +5,7 @@ module.exports = function($parse){
     scope: true,
     templateUrl: 'layout/toolbar/template.html',
     link: function(scope, element, attrs){
-      scope.options = {};
+      scope.options = scope.options || {};
       scope.options.allowSearch = $parse(attrs.allowSearch)(scope);
     }
   }
