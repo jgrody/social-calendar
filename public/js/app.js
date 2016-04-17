@@ -406,7 +406,7 @@ module.exports = ["$q", "authFactory", "ezfb", "DB", function($q, authFactory, e
           params.location.longitude
         ].join(','),
         type: 'place',
-        distance: 50000,
+        distance: 25000,
         limit: 1000,
         fields: 'id'
       }).then(function(response){
@@ -707,9 +707,8 @@ module.exports = angular.module('app.home', [
   require('modules/truncate').name,
   require('factories').name,
   'mwl.calendar'
-]).controller('HomeController', ["$scope", "currentUser", "facebookService", "DB", "eventsRepository", "$mdToast", "$timeout", function($scope, currentUser, facebookService,
-              DB, eventsRepository, $mdToast, $timeout){
-                
+]).controller('HomeController', ["$scope", "currentUser", "facebookService", "DB", "eventsRepository", "$mdToast", "$timeout", "calendarConfig", function($scope, currentUser, facebookService,
+              DB, eventsRepository, $mdToast, $timeout, calendarConfig){
     "ngInject";
 
     window.scope = $scope;
@@ -721,20 +720,20 @@ module.exports = angular.module('app.home', [
     $scope.calendarDate = new Date();
 
     DB('events').on('child_added', function(snapshot){
-      var event = snapshot.val();
-      setOwnership(event);
+      setOwnership(snapshot.val());
     })
 
     $scope.search = function(query){
-      $scope.events = [];
-
       $scope.options.fetching = true;
+      $scope.events = [];
 
       facebookService.getEvents({
         query: query || $scope.options.search,
         location: currentUser.location
       })
       .then(function(events){
+        $scope.events = [];
+
         events.each(function(event){
           if (event.startsAt) {
             event.startsAt = moment(event.startsAt).toDate()
@@ -747,6 +746,7 @@ module.exports = angular.module('app.home', [
         })
       })
       .finally(function(){
+        console.log($scope.events);
         $scope.options.hasFetched = true;
         delete $scope.options.fetching;
       })
@@ -831,24 +831,22 @@ module.exports = angular.module('app.home', [
     }
 
     $provide.decorator('mwlCalendarDirective', ["$delegate", function($delegate) {
-        var directive = $delegate[0];
-        directive.templateUrl = 'home/calendar/calendar.html';
-        directive = attachBindings(directive);
-
-        return $delegate;
+      var directive = $delegate[0];
+      directive.templateUrl = 'calendar/templates/calendar.html';
+      attachBindings(directive);
+      return $delegate;
     }]);
 
     $provide.decorator('mwlCalendarDayDirective', ["$delegate", function($delegate) {
-        var directive = $delegate[0];
-        directive.templateUrl = 'home/calendar/day-view.html';
-        directive = attachBindings(directive);
-
-        return $delegate;
+      var directive = $delegate[0];
+      directive.templateUrl = 'calendar/templates/day-view.html';
+      attachBindings(directive);
+      return $delegate;
     }]);
   }])
   .config(["$routeProvider", function($routeProvider){
     $routeProvider.when('/home', {
-      templateUrl: 'home/calendar.html',
+      templateUrl: 'home/template.html',
       controller: 'HomeController',
       resolve: {
         currentUser: ['Auth', 'UserModel', function (Auth, UserModel) {
@@ -909,7 +907,7 @@ module.exports = ["$parse", function($parse){
     scope: true,
     templateUrl: 'layout/toolbar/template.html',
     link: function(scope, element, attrs){
-      scope.options = {};
+      scope.options = scope.options || {};
       scope.options.allowSearch = $parse(attrs.allowSearch)(scope);
     }
   }
@@ -946,8 +944,8 @@ module.exports = angular.module('app.location', [
 
     var geoLocationOptions = {
       enableHighAccuracy: true,
-      timeout : 5000,
-      maximumAge: 5 * 60 * 1000
+      timeout : 3000,
+      // maximumAge: 5 * 60 * 1000
     }
 
     // https://gist.github.com/yckart/3719451
