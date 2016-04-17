@@ -27090,7 +27090,7 @@ a.cal-event-week {
     border-bottom: 1px solid #e1e1e1; } }
 /*# sourceMappingURL=angular-bootstrap-calendar.min.css.map*/
 .cal-day-box .event-time {
-  line-height: 0; }
+  line-height: 1px; }
 
 .day-toggle-btn {
   margin: 0;

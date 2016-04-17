@@ -406,7 +406,7 @@ module.exports = ["$q", "authFactory", "ezfb", "DB", function($q, authFactory, e
           params.location.longitude
         ].join(','),
         type: 'place',
-        distance: 25000,
+        distance: 50000,
         limit: 1000,
         fields: 'id'
       }).then(function(response){
