@@ -8,8 +8,7 @@ module.exports = angular.module('app.home', [
   require('factories').name,
   'mwl.calendar'
 ]).controller('HomeController', function($scope, currentUser, facebookService,
-              DB, eventsRepository, $mdToast, $timeout){
-                
+              DB, eventsRepository, $mdToast, $timeout, calendarConfig){
     "ngInject";
 
     window.scope = $scope;
@@ -21,20 +20,20 @@ module.exports = angular.module('app.home', [
     $scope.calendarDate = new Date();
 
     DB('events').on('child_added', function(snapshot){
-      var event = snapshot.val();
-      setOwnership(event);
+      setOwnership(snapshot.val());
     })
 
     $scope.search = function(query){
-      $scope.events = [];
-
       $scope.options.fetching = true;
+      $scope.events = [];
 
       facebookService.getEvents({
         query: query || $scope.options.search,
         location: currentUser.location
       })
       .then(function(events){
+        $scope.events = [];
+
         events.each(function(event){
           if (event.startsAt) {
             event.startsAt = moment(event.startsAt).toDate()
@@ -47,6 +46,7 @@ module.exports = angular.module('app.home', [
         })
       })
       .finally(function(){
+        console.log($scope.events);
         $scope.options.hasFetched = true;
         delete $scope.options.fetching;
       })
@@ -131,24 +131,22 @@ module.exports = angular.module('app.home', [
     }
 
     $provide.decorator('mwlCalendarDirective', function($delegate) {
-        var directive = $delegate[0];
-        directive.templateUrl = 'home/calendar/calendar.html';
-        directive = attachBindings(directive);
-
-        return $delegate;
+      var directive = $delegate[0];
+      directive.templateUrl = 'calendar/templates/calendar.html';
+      attachBindings(directive);
+      return $delegate;
     });
 
     $provide.decorator('mwlCalendarDayDirective', function($delegate) {
-        var directive = $delegate[0];
-        directive.templateUrl = 'home/calendar/day-view.html';
-        directive = attachBindings(directive);
-
-        return $delegate;
+      var directive = $delegate[0];
+      directive.templateUrl = 'calendar/templates/day-view.html';
+      attachBindings(directive);
+      return $delegate;
     });
   })
   .config(function($routeProvider){
     $routeProvider.when('/home', {
-      templateUrl: 'home/calendar.html',
+      templateUrl: 'home/template.html',
       controller: 'HomeController',
       resolve: {
         currentUser: ['Auth', 'UserModel', function (Auth, UserModel) {
