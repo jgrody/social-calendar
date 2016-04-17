@@ -23,8 +23,8 @@ module.exports = angular.module('app.location', [
 
     var geoLocationOptions = {
       enableHighAccuracy: true,
-      timeout : 5000,
-      maximumAge: 5 * 60 * 1000
+      timeout : 3000,
+      // maximumAge: 5 * 60 * 1000
     }
 
     // https://gist.github.com/yckart/3719451
