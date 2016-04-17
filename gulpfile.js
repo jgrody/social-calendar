@@ -1,3 +1,5 @@
+require('sugar/release/sugar-full.development');
+
 var gulp = require('gulp')
 var sass = require('gulp-ruby-sass')
 var connect = require('gulp-connect')
@@ -7,7 +9,6 @@ var ngAnnotate = require('gulp-ng-annotate');
 var rename = require("gulp-rename");
 var streamify = require('gulp-streamify');
 var cachebust = require('gulp-cache-bust');
-// var livereload = require('gulp-livereload');
 
 // configure paths for browserify
 var cwd = process.cwd();
@@ -39,18 +40,30 @@ gulp.task('calendar', function(){
     .pipe(gulp.dest('sass'))
 })
 
-gulp.task('browserify', function() {
-      // Grabs the app.js file
-    return browserify('./app/app.js')
-    .bundle()
-    .on('error', function (err) {
-      console.log(err.toString());
-      this.emit("end");
+var bundles = [
+  { name: 'app' },
+  { name: 'vendor' }
+]
+
+function createBundles(){
+  bundles.each(function(bundle){
+    gulp.task(bundle.name, function() {
+      return browserify('./app/' + bundle.name + '.js')
+      .bundle()
+      .on('error', function (err) {
+        console.log(err.toString());
+        this.emit("end");
+      })
+      .pipe(source(bundle.name + '.js'))
+      .pipe(streamify(ngAnnotate()))
+      .pipe(gulp.dest('./public/js/'))
     })
-    .pipe(source('app.js'))
-    .pipe(streamify(ngAnnotate()))
-    .pipe(gulp.dest('./public/js/'))
   })
+}
+
+createBundles();
+
+gulp.task('browserify', ['app', 'vendor']);
 
 gulp.task('sass', function() {
   return sass('sass/style.sass', {
@@ -58,17 +71,14 @@ gulp.task('sass', function() {
   })
   .on('error', sass.logError)
   .pipe(gulp.dest('public/css'))
-  // .pipe(livereload())
 })
 
 gulp.task('copy', function(){
   return gulp.src('./app/**/*.html')
     .pipe(gulp.dest('./public'))
-    // .pipe(livereload())
 })
 
 gulp.task('watch', function() {
-  // livereload.listen();
   gulp.watch([
     'app/**/*.js',
     'app/**/*.html',
