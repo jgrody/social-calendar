@@ -63,7 +63,7 @@ function createBundles(){
 
 createBundles();
 
-gulp.task('browserify', ['app', 'vendor']);
+gulp.task('browserify', ['app']);
 
 gulp.task('sass', function() {
   return sass('sass/style.sass', {
@@ -95,6 +95,7 @@ gulp.task('default', [
   'copy',
   'bootstrap',
   'calendar',
+  'vendor',
   'browserify',
   'watch'
 ])
