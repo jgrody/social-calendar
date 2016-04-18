@@ -27100,6 +27100,21 @@ a.cal-event-week {
     height: 40px;
     width: 40px; }
 
+.day-datepicker .md-datepicker-button,
+.day-datepicker .md-datepicker-input {
+  display: none; }
+.day-datepicker .md-datepicker-input-container {
+  border: none; }
+.day-datepicker .md-datepicker-triangle-button {
+  padding: 0;
+  margin: 0;
+  top: -12px;
+  left: -28px; }
+.day-datepicker.md-datepicker-open .md-datepicker-input-container {
+  margin-left: 12px; }
+.day-datepicker.md-datepicker-open .md-datepicker-triangle-button {
+  display: inline-block; }
+
 .cal-slide-box md-list {
   padding-top: 0; }
 .cal-slide-box md-list-item p {

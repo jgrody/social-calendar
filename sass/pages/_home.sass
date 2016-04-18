@@ -10,3 +10,32 @@
     font-size: 40px
     height: 40px
     width: 40px
+
+.day-datepicker
+  // Change color of caret
+  // .md-datepicker-expand-triangle
+
+  // calendar icon and actual input
+  .md-datepicker-button,
+  .md-datepicker-input
+    display: none
+
+  // fixes spacing issue between open/close
+  .md-datepicker-input-container
+    border: none
+
+  // positioning of triangle button
+  .md-datepicker-triangle-button
+    padding: 0
+    margin: 0
+    top: -12px
+    left: -28px
+
+  // Fix position of triangle button when datepicker is open
+  &.md-datepicker-open
+    .md-datepicker-input-container
+      // fixes spacing issue
+      margin-left: 12px
+
+    .md-datepicker-triangle-button
+      display: inline-block

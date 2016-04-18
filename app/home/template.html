@@ -12,7 +12,14 @@
           <md-icon>keyboard_arrow_left</md-icon>
         </md-button>
 
-        <div class="md-title">{{calendarTitle}}</div>
+        <div class="md-title">
+          {{calendarTitle}}
+        <md-datepicker
+            class="day-datepicker"
+            ng-model="calendarDate"
+            md-placeholder="{{calendarTitle}}">
+        </md-datepicker>
+        </div>
 
         <md-button class="md-primary day-toggle-btn"
                    mwl-date-modifier

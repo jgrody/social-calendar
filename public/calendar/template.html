@@ -1,43 +1,40 @@
 <div toolbar-navigation></div>
 
 <md-content flex md-scroll-y>
-  <div layout="row"
-       layout-fill
-       layout-align="center center">
-    <h2>{{calendarTitle}}</h2>
-  </div>
+  <div class="push-none" layout="row">
+    <span flex></span>
+    <div layout-align="center center">
+      <md-button class="push-none md-primary"
+                 mwl-date-modifier
+                 date="calendarDate"
+                 decrement="calendarView">
+        <md-icon>keyboard_arrow_left</md-icon>
+      </md-button>
 
-  <div layout="row" layout-padding class="push-bottom-xxs">
-    <div class="text-left"
-         layout-align="start start"
-         flex>
-      <md-button
-          class="push-none md-primary"
-          mwl-date-modifier
-          date="calendarDate"
-          decrement="calendarView">
-        Previous
-      </md-button>
-      <md-button
-          class="push-none md-primary"
-          mwl-date-modifier
-          date="calendarDate"
-          set-to-today>
-        Today
-      </md-button>
-      <md-button
-          class="push-none md-primary"
-          mwl-date-modifier
-          date="calendarDate"
-          increment="calendarView">
-        Next
+      <span class="md-title">{{calendarTitle}}</span>
+
+      <md-button class="push-none md-primary"
+                 mwl-date-modifier
+                 date="calendarDate"
+                 increment="calendarView">
+        <md-icon>keyboard_arrow_right</md-icon>
       </md-button>
     </div>
-    <div class="text-right" layout-align="end start" flex>
+
+    <!-- <div class="text-right" layout-align="end start" flex>
       <md-button ng-repeat="option in calendarViewOptions"
                  ng-class="{'md-primary': calendarView == option}"
                  class="push-none pad-none"
                  ng-click="toggleView(option)">{{option}}
+      </md-button>
+    </div> -->
+
+    <div layout-align="end center" class="text-right" flex>
+      <md-button class="push-none md-primary"
+                 mwl-date-modifier
+                 date="calendarDate"
+                 set-to-today>
+        Today
       </md-button>
     </div>
   </div>
