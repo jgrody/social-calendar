@@ -2,7 +2,6 @@
   <div class="clearfix" ng-style="{height: vm.dayViewHeight + 'px'}">
     <md-list ng-if="vm.view.length" class="md-dense pad-top-none">
       <md-list-item class="md-3-line secondary-button-padding"
-                    ng-click="null"
                     ng-repeat="event in vm.view track by event.$id">
 
         <div class="event-details" layout-padding>
@@ -18,8 +17,12 @@
           <h3 class="pad-none" flex="50">
             {{event.name | truncate:true:75}}
           </h3>
-          <h4 class="pad-none">{{event.venueName}}</h4>
-          <p class="pad-none">{{event.venueLocation.city}}, {{event.venueLocation.state}}</p>
+          <h4 class="pad-none">
+            {{event.venueName}}
+          </h4>
+          <p class="pad-none">
+            {{event.venueLocation.city}}, {{event.venueLocation.state}}
+          </p>
 
           <div class="md-secondary">
             <md-button class="md-fab md-mini event-add-to-calendar"
