@@ -97,6 +97,7 @@ gulp.task('watch', function() {
   ], ['copy'])
 
   gulp.watch([
+    'sass/*.sass',
     'sass/**/*.sass',
     'sass/**/*.scss'
   ], ['sass']);
