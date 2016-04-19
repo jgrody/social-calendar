@@ -30,7 +30,7 @@
                        ng-click="vm.onEventClick({calendarEvent: event})"
                        aria-label="Add to calendar">
 
-              <md-tooltip>Add To Calendar</md-tooltip>
+              <!-- <md-tooltip>Add To Calendar</md-tooltip> -->
               <md-icon>event_available</md-icon>
             </md-button>
 
@@ -38,7 +38,7 @@
                        ng-if="event.belongsToCurrentUser"
                        ng-click="vm.onEventClick({calendarEvent: event})">
 
-              <md-tooltip>Remove From Calendar</md-tooltip>
+              <!-- <md-tooltip>Remove From Calendar</md-tooltip> -->
               <md-icon>event_busy</md-icon>
             </md-button>
           </div>
