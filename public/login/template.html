@@ -1,4 +1,24 @@
 <div toolbar-navigation></div>
-<md-content flex md-scroll-y>
-  <p>You must login to use this service!</p>
+<md-content id="login-page-content"
+            layout="column"
+            layout-align="start center">
+  <span flex="10"></span>
+  <md-card id="login-page-card"
+           class="text-center"
+           layout="column"
+           layout-align="end center">
+    <md-card-content>
+      <h1>Abbey Ager!</h1>
+      <p class="md-subhead">
+        We need to tell people all the cool stuff they can do with this app. Insert text here
+      </p>
+      <div class="push-top-xl">
+        <md-button ng-click="login()">
+          <img src="/images/fb-login.png"
+               alt="Login with Facebook"
+               flex="100" />
+        </md-button>
+      </div>
+    </md-card-content>
+  </md-card>
 </md-content>

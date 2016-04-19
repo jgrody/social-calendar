@@ -39,16 +39,16 @@
                ng-click="options.showSearch = !options.showSearch">
       <md-icon>search</md-icon>
     </md-button>
-    <md-menu>
+    <md-menu ng-if="loggedInUser">
       <md-button aria-label="Open Settings"
                  class="md-icon-button push-none pad-none"
                  ng-click="$mdOpenMenu($event)">
         <md-icon md-menu-origin>more_vert</md-icon>
       </md-button>
       <md-menu-content width="4">
-        <md-menu-item ng-repeat="link in optionLinks">
-          <md-button ng-click="link.fn()">
-            <span md-menu-align-target>{{link.title}}</span>
+        <md-menu-item>
+          <md-button ng-click="logout()">
+            <span md-menu-align-target>Logout</span>
           </md-button>
         </md-menu-item>
       </md-menu-content>

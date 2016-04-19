@@ -73,21 +73,33 @@ gulp.task('sass', function() {
   .pipe(gulp.dest('public/css'))
 })
 
-gulp.task('copy', function(){
+gulp.task('templates', function(){
   return gulp.src('./app/**/*.html')
     .pipe(gulp.dest('./public'))
 })
 
+gulp.task('images', function(){
+  return gulp.src('./app/images/**/*.png')
+    .pipe(gulp.dest('./public/images'))
+})
+
+gulp.task('copy', ['templates', 'images']);
+
 gulp.task('watch', function() {
   gulp.watch([
     'app/**/*.js',
-    'app/**/*.html',
     'modules/**/*.js',
-    'modules/**/*.html'
   ], ['browserify', 'copy']);
 
-  gulp.watch(['sass/**/*.sass', 'sass/**/*.scss'], ['sass']);
+  gulp.watch([
+    'app/**/*.html',
+    'modules/**/*.html'
+  ], ['copy'])
 
+  gulp.watch([
+    'sass/**/*.sass',
+    'sass/**/*.scss'
+  ], ['sass']);
 })
 
 gulp.task('default', [

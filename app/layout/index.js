@@ -9,10 +9,9 @@ module.exports = angular.module('app.layout', [
     {title: 'Calendar', path: '/calendar', icon: 'event'}
   ]
 
-  $scope.optionLinks = [
-    {title: 'Login', fn: authFactory.login},
-    {title: 'Logout', fn: authFactory.logout}
-  ]
+  $scope.logout = function(){
+    authFactory.logout();
+  }
 
   $scope.toggleSidenav = function(menuId) {
     $mdSidenav(menuId).toggle();

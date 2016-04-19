@@ -27089,16 +27089,26 @@ a.cal-event-week {
   .cal-year-box [class*=span]:nth-child(1), .cal-year-box [class*=span]:nth-child(2) {
     border-bottom: 1px solid #e1e1e1; } }
 /*# sourceMappingURL=angular-bootstrap-calendar.min.css.map*/
+.cal-day-box .event-details {
+  padding-top: 0;
+  min-width: 78px;
+  padding: 16px 10px; }
+.cal-day-box .event-time,
+.cal-day-box .event-distance {
+  margin-bottom: 5px;
+  padding: 0; }
 .cal-day-box .event-time {
-  line-height: 1px; }
+  line-height: 14px; }
+.cal-day-box .event-distance {
+  line-height: 10px; }
 
 .day-toggle-btn {
   margin: 0;
-  padding: 5px; }
+  padding: 0; }
   .day-toggle-btn .material-icons {
-    font-size: 40px;
-    height: 40px;
-    width: 40px; }
+    font-size: 28px;
+    height: 28px;
+    width: 28px; }
 
 .day-datepicker .md-datepicker-button,
 .day-datepicker .md-datepicker-input {
@@ -27130,6 +27140,12 @@ a.cal-event-week {
   margin: 0 !important;
   padding-right: 35px; }
 
+#login-page-content {
+  height: 100%;
+  background-color: #EEEEEE; }
+  #login-page-content #login-page-card {
+    width: 50%; }
+
 [ng\:cloak], [ng-cloak], .ng-cloak {
   display: none !important; }
 
@@ -27137,3 +27153,6 @@ a.cal-event-week {
 .app-toolbar .md-toolbar-tools {
   min-height: 70px;
   height: 70px; }
+
+#page-content {
+  height: 100%; }

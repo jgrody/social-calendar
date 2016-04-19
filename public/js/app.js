@@ -869,10 +869,9 @@ module.exports = angular.module('app.layout', [
     {title: 'Calendar', path: '/calendar', icon: 'event'}
   ]
 
-  $scope.optionLinks = [
-    {title: 'Login', fn: authFactory.login},
-    {title: 'Logout', fn: authFactory.logout}
-  ]
+  $scope.logout = function(){
+    authFactory.logout();
+  }
 
   $scope.toggleSidenav = function(menuId) {
     $mdSidenav(menuId).toggle();
@@ -1004,7 +1003,10 @@ module.exports = angular.module('app.location', [
 module.exports = angular.module('app.login', [
   require('modules/sanitized').name
 ])
-  .controller('LoginController', ["$scope", function($scope){
+  .controller('LoginController', ["$scope", "authFactory", function($scope, authFactory){
+    $scope.login = function(){
+      authFactory.login();
+    }
   }])
   .config(["$routeProvider", function($routeProvider){
     $routeProvider.when('/login', {
@@ -1012,7 +1014,6 @@ module.exports = angular.module('app.login', [
       controller: 'LoginController'
     });
   }])
-
 
 },{"modules/sanitized":42}],30:[function(require,module,exports){
 module.exports = ["$mdThemingProvider", function($mdThemingProvider){
