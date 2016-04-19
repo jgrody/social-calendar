@@ -22,7 +22,7 @@
           <p class="pad-none">{{event.venueLocation.city}}, {{event.venueLocation.state}}</p>
 
           <div class="md-secondary">
-            <md-button class="md-fab md-primary md-hue-2 md-mini"
+            <md-button class="md-fab md-mini event-add-to-calendar"
                        ng-if="!event.belongsToCurrentUser"
                        ng-click="vm.onEventClick({calendarEvent: event})"
                        aria-label="Add to calendar">
@@ -31,9 +31,9 @@
               <md-icon>event_available</md-icon>
             </md-button>
 
-            <md-button class="md-fab md-hue-2 md-mini"
+            <md-button class="md-fab md-hue-3 md-mini"
                        ng-if="event.belongsToCurrentUser"
-                       ng-click="vm.onEventClick({calendarevent: event})">
+                       ng-click="vm.onEventClick({calendarEvent: event})">
 
               <md-tooltip>Remove From Calendar</md-tooltip>
               <md-icon>event_busy</md-icon>

@@ -11,17 +11,12 @@ module.exports = angular.module('app.home', [
               DB, eventsRepository, $mdToast, $timeout, calendarConfig){
     "ngInject";
 
-    window.scope = $scope;
     $scope.options = {};
     $scope.options.hasFetched = false;
 
     $scope.calendarViewOptions = ['day'];
     $scope.calendarView = 'day';
     $scope.calendarDate = new Date();
-
-    DB('events').on('child_added', function(snapshot){
-      setOwnership(snapshot.val());
-    })
 
     $scope.search = function(query){
       $scope.options.fetching = true;
@@ -43,10 +38,10 @@ module.exports = angular.module('app.home', [
           }
 
           $scope.events.push(event)
+          $scope.events.map(mapEventModels)
         })
       })
       .finally(function(){
-        console.log($scope.events);
         $scope.options.hasFetched = true;
         delete $scope.options.fetching;
       })
@@ -97,7 +92,8 @@ module.exports = angular.module('app.home', [
       }
     }
 
-    function setOwnership(event){
+    function mapEventModels(event){
+      // Determines if user owns event or not
       DB('users', currentUser.$id, 'events', event.eventId)
         .once('value', function(userIndexRef){
           if (userIndexRef.exists()) {
@@ -106,10 +102,7 @@ module.exports = angular.module('app.home', [
             });
           }
         })
-    }
 
-    function mapEventModels(event){
-      setOwnership(event);
       return event;
     }
   })
