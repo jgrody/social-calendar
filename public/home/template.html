@@ -6,6 +6,7 @@
       <div layout="row"
            layout-align="space-between center">
         <md-button class="md-primary day-toggle-btn"
+                   ng-disabled="!options.hasFetched"
                    mwl-date-modifier
                    date="calendarDate"
                    decrement="calendarView">
@@ -14,14 +15,16 @@
 
         <div>
           <span class="md-title">{{calendarTitle}}</span>
-          
+
           <md-datepicker class="day-datepicker"
                          ng-model="calendarDate"
-                         md-placeholder="{{calendarTitle}}">
+                         md-placeholder="{{calendarTitle}}"
+                         ng-disabled="!options.hasFetched">
           </md-datepicker>
         </div>
 
         <md-button class="md-primary day-toggle-btn"
+                   ng-disabled="!options.hasFetched"
                    mwl-date-modifier
                    date="calendarDate"
                    increment="calendarView">

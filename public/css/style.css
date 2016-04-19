@@ -27110,6 +27110,13 @@ a.cal-event-week {
     height: 28px;
     width: 28px; }
 
+.day-datepicker[disabled] .md-datepicker-triangle-button {
+  display: block; }
+.day-datepicker[disabled] .md-datepicker-expand-triangle {
+  border-top-color: #BBBBBB; }
+
+.day-datepicker .md-datepicker-expand-triangle {
+  border-top-color: #03A9F4; }
 .day-datepicker .md-datepicker-button,
 .day-datepicker .md-datepicker-input {
   display: none; }
